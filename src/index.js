@@ -42,12 +42,12 @@ server.post('/upload', (req, res, next) => {
     const name = uploadFile.name;
     const saveAs = `${name}`;
 
-    uploadFile.mv(`${__dirname}/files/${saveAs}`, function(err) {
+    uploadFile.mv(`${__dirname}/files/${saveAs}`, async function(err) {
       if (err) {
         return res.status(500).send(err);
       }
-      AWSService.uploadFile(`${__dirname}/files/${saveAs}`, saveAs);
-      return res.status(200).json({ status: 'uploaded', name, saveAs });
+      const fileURL = await AWSService.uploadFile(`${__dirname}/files/${saveAs}`, saveAs);
+      return res.status(200).json({ status: 'uploaded', location: fileURL });
     });
   });
   
