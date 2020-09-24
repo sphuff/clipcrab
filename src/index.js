@@ -32,8 +32,8 @@ server.post('/encode', async (req, res) => {
 
 server.post('/transcribe', async (req, res) => {
     const { audioURL } = req.body;
-    const text = await TranscriptionController.getText(audioURL);
-    res.json({ text });
+    const wordBlocks = await TranscriptionController.getWordBlocks(audioURL);
+    res.json({ wordBlocks });
 });
 
 
