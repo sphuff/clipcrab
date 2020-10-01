@@ -12,14 +12,16 @@ module.exports = class TranscriptionController {
     static async getWordBlocks(audioURL, isProd) {
         let transcript = testTranscript;
         if (isProd) {
-            transcript = this._getRevAiTranscript(audioURL);
+            transcript = await this._getRevAiTranscript(audioURL);
         }
         return this._getWordBlocks(transcript);
     }
 
     static async _getRevAiTranscript(audioURL) {
         // Submit an audio file to Rev.ai
-        var job = await client.submitJobUrl(audioURL);
+        var job = await client.submitJobUrl(audioURL, {
+            skip_diarization: true,
+        });
 
         // Check your job's status
         const jobIsReady = (job) => {

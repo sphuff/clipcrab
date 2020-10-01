@@ -1,16 +1,23 @@
-const ffmpeg = require('ffmpeg');
-const fetch = require('node-fetch');
-const http = require('http');
-const fs = require('fs');
-const childProcess = require('child_process');
+const path = require('path');
+const { exec, execSync } = require('child_process');
 
 module.exports = class EncodingController {
-    static async createMP4(audioFilename, videoFilename) {
-        return new Promise(async (resolve, reject) => {
-            const videoFileLocation = `files/${videoFilename}`;
-            const audioFileLocation = `files/${audioFilename}`;
-            childProcess.execSync(`ffmpeg -i ${videoFileLocation} -i ${audioFileLocation} -c:v copy -c:a aac output.mp4`);
-            resolve();
+    static combineAudioAndVideo(audioPath, videoPath) {
+        return new Promise((resolve, reject) => {
+            console.log(videoPath);
+            console.log(audioPath);
+            const videoFilename = path.basename(videoPath);
+            const outputLocation = path.join(__dirname, `../transcoded/${videoFilename}`);
+            console.log(outputLocation);
+            try {
+                exec(`ffmpeg -i ${videoPath} -i ${audioPath} -y -c:v libx264 -preset fast -c:a aac ${outputLocation}`, (err, stdout, stderr) => {
+                    console.log(stdout);
+                    console.log(stderr)
+                    resolve(outputLocation);
+                });
+            } catch(err) {
+                reject(err);
+            }
         });
     }
 }
