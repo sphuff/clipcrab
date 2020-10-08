@@ -26,3 +26,7 @@ export const hexToRGB = (hex, alpha)  => {
 export const getRandomColorHex = () => {
     return Math.floor(Math.random()*16777215).toString(16);
 }
+
+export const makeServerURL = (path) => {
+    return process.env.NODE_ENV === 'production' ? '' : `http://localhost:3001${path}`;
+}

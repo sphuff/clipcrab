@@ -71,4 +71,4 @@ server.get('*', (req,res) =>{
 });
   
 
-server.listen(3001, () => console.log('server started'));
+server.listen(process.env.port || 3001, () => console.log('server started'));

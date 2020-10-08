@@ -3,7 +3,7 @@ import logo from './assets/logo.png';
 import './App.scss';
 import pixiSound from 'pixi-sound';
 import config from './config.json';
-import { hexToRGB, getRandomColorHex } from './utils';
+import { hexToRGB, getRandomColorHex, makeServerURL } from './utils';
 import { NORMAL_ALPHA, } from './constants';
 import Axios from 'axios';
 import FileSelector from './FileSelector';
@@ -34,7 +34,7 @@ export default class App extends Component {
   }
 
   async encodeVideo(serverAudioFileURL, serverVideoFileURL) {
-    const res = await fetch('http://localhost:3001/encode', {
+    const res = await fetch(makeServerURL('/encode'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,14 +63,14 @@ export default class App extends Component {
   async uploadFile(file) {
     let formData = new FormData();
     formData.append('file', file);
-    let res = await Axios.post('http://localhost:3001/upload', formData);
+    let res = await Axios.post(makeServerURL('/upload'), formData);
     console.log(res);
     const { serverFileURL, s3FileURL } = res.data;
     return { serverFileURL, s3FileURL };
   }
 
   async requestTranscription(fileURL) {
-    let res = await Axios.post('http://localhost:3001/transcribe', { audioURL: fileURL });
+    let res = await Axios.post(makeServerURL('/transcribe'), { audioURL: fileURL });
     console.log(res);
     const { wordBlocks } = res.data;
     this.setState({
