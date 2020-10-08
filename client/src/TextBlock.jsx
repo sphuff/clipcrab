@@ -43,6 +43,7 @@ export default class TextBlock extends Component {
 
             let destY = getYPos(startingY, alignY, pixiApp);
             basicText.x = getXPos(startingX, alignX, pixiApp);
+            basicText.zIndex = 1;
             
             basicText.alpha = 0;
             basicText.anchor.set(0.5, 0);
