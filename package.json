@@ -20,6 +20,7 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "dev:prod": "NODE_ENV=production nodemon src/index.js",
     "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build",
