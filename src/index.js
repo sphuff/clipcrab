@@ -72,3 +72,4 @@ server.get('*', (req,res) =>{
   
 
 server.listen(process.env.PORT || 3001, () => console.log('server started'));
+server.timeout = 60000;
