@@ -1,0 +1,10 @@
+.timeline-textContainer {
+    .timeline-textBlock {
+        position: absolute;
+        
+        & .firstLetter {
+            font-weight: bold;
+            font-size: x-large;
+        }
+    }
+}

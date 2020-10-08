@@ -14,6 +14,8 @@ const TranscriptionController = require('./controllers/TranscriptionController')
 server.use(bodyParser.json());
 server.use(cors());
 
+server.use(express.static(path.join(__dirname, '../', 'client/build')));
+
 server.use(
     fileUpload({
       useTempFiles: true,
@@ -63,6 +65,10 @@ server.post('/upload', (req, res, next) => {
       return res.status(200).json({ status: 'uploaded', serverFileURL: fileLocation, s3FileURL: s3Location });
     });
   });
+
+server.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
   
 
 server.listen(3001, () => console.log('server started'));

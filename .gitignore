@@ -3,3 +3,4 @@
 node_modules
 src/files
 src/transcoded
+build

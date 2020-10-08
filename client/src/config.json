@@ -1,0 +1,74 @@
+{
+    "layouts": {
+        "laptop": {
+            "audiogram": {
+                "height": 156,
+                "width": 672,
+                "x": 1008,
+                "y": 624
+            },
+            "text": {
+                "x": 200,
+                "y": 700,
+                "width": 500
+            },
+            "coverImage": {
+                "x": 280,
+                "y": 117,
+                "width": 300,
+                "height": 300
+            }
+
+        },
+        "phone": {
+            "width": 720,
+            "height": 1280,
+            "audiogram": {
+                "height": 300,
+                "width": 550,
+                "alignX": "center",
+                "y": 950
+            },
+            "text": {
+                "alignX": "center",
+                "alignY": "center",
+                "width": 500,
+                "animation": "none"
+            },
+            "coverImage": {
+                "x": 97,
+                "y": 93,
+                "width": 220,
+                "height": 220,
+                "alignX": "center"
+            }
+
+        },
+        "instagram": {
+            "width": 417,
+            "height": 417,
+            "audiogram": {
+                "height": 97,
+                "width": 333,
+                "alignX": "center",
+                "y": 284
+            },
+            "text": {
+                "alignX": "center",
+                "alignY": "center",
+                "width": 285,
+                "fontSize": 16,
+                "lineHeight": 22,
+                "animation": "none"
+            },
+            "coverImage": {
+                "y": 42,
+                "width": 117,
+                "height": 117,
+                "alignX": "center"
+            }
+
+        }
+    },
+    "fps": 20
+}
