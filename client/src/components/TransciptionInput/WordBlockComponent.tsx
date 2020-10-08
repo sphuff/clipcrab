@@ -136,7 +136,7 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
             onDragEnd={() => updateTextBlocks(wordBlock)}
             onContextMenu={(evt) => evt.preventDefault()}
             draggable={true}
-            style={{backgroundColor: `${rgba}`, display: wordBlock.isActive ? 'block' : 'none'}}
+            style={{backgroundColor: `${rgba}`, display: wordBlock.isActive ? 'inline-block' : 'none'}}
         >
             {text}
         </span>

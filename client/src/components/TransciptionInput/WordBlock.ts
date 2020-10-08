@@ -64,10 +64,10 @@ export default class WordBlock {
         childBlock.parentWord = undefined;
         let parentText = this.getText();
         const padding = 10;
-        childBlock.ref.current.style.display = 'block';
+        childBlock.ref.current.style.display = 'inline-block';
         // no idea why x3, but it works
         const newWidth = this.ref.current.clientWidth - childBlock.ref.current.clientWidth - (3*padding);
-        this.ref.current.style.minWidth = `${newWidth}px`;
+        // this.ref.current.style.minWidth = `${newWidth}px`;
         this.ref.current.innerText = parentText;
     }
 
@@ -88,7 +88,7 @@ export default class WordBlock {
         const padding = 10;
         childBlock.xPos = childBlock.ref.current.offsetLeft;
         const newWidth = this.ref.current.clientWidth + childBlock.ref.current.clientWidth + padding;
-        this.ref.current.style.minWidth = `${newWidth}px`;
+        // this.ref.current.style.minWidth = `${newWidth}px`;
         childBlock.ref.current.style.display = 'none';
         const text = this.getText();
         this.ref.current.innerText = text;
