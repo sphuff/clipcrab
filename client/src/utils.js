@@ -28,5 +28,5 @@ export const getRandomColorHex = () => {
 }
 
 export const makeServerURL = (path) => {
-    return process.env.NODE_ENV === 'production' ? '' : `http://localhost:3001${path}`;
+    return process.env.NODE_ENV === 'production' ? `https://app.clipcrab.com${path}` : `http://localhost:3001${path}`;
 }
