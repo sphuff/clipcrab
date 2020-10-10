@@ -20,7 +20,6 @@ export default class Editor extends Component {
             app: null,
             finishedEncoding: false,
             pauseTime: null,
-            isPlayingAudio: true,
             isRecording: false,
             textBlocks: [],
         };
@@ -71,7 +70,6 @@ export default class Editor extends Component {
       this.setState({
         seekTo,
         pauseTime: null,
-        isPlayingAudio: true,
       });
     }
 
@@ -136,7 +134,6 @@ export default class Editor extends Component {
       if (this.state.pauseTime) {
         this.setState({
           pauseTime: null,
-          isPlayingAudio: true,
         }, () => {
           this.props.sound.resume();
         });
@@ -151,7 +148,6 @@ export default class Editor extends Component {
       // set seekTo for text animation when replayed
       this.setState({
         pauseTime: pauseTime,
-        isPlayingAudio: false,
         seekTo: pauseTime,
       }, () => {
         this.props.sound.pause();
@@ -169,7 +165,8 @@ export default class Editor extends Component {
 
     render() {
         const { sound, soundFileURL, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
-        const { app, hexColor, textBlocks, isPlayingAudio, coverImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
+        const { app, hexColor, textBlocks, coverImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
+        const isPlayingAudio = !!pauseTime;
 
         return (
             <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>
@@ -194,7 +191,7 @@ export default class Editor extends Component {
                 <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)}/>
                 <Background pixiApp={app} hexColor={hexColor}/>
                 <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
-                <TextBlock pixiApp={app} restartSound={restartSound} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
+                <TextBlock pixiApp={app} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
                 <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
                 {/* <Audiogram /> */}
             </div>

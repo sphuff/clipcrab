@@ -101,7 +101,7 @@ export default class TextBlock extends Component {
     }
 
     componentDidUpdate(props) {
-        const { restartSound, pauseAt, alignY, y: startingY, textBlocks, seekTo, pixiApp, pixiApp: { stage }} = this.props;
+        const { pauseAt, alignY, y: startingY, textBlocks, seekTo, pixiApp, pixiApp: { stage }} = this.props;
         console.log('text block animate');
         if (!stage) return;
         let textBlocksToAnimate = textBlocks;
