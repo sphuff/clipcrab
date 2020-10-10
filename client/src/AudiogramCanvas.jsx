@@ -48,33 +48,29 @@ export default class AudiogramCanvas extends Component {
         const startingX = getXPos(x, alignX, pixiApp, width);
 
         this.currentTime = 0;
-        let startTime;
-        let ticker = PIXI.Ticker.shared;
-        ticker.autoStart = false;
+        this.ticker = PIXI.Ticker.shared;
+        this.ticker.autoStart = false;
         let graphics = new PIXI.Graphics();
         stage.addChild(graphics);
         graphics.zIndex = 1;
         this.startingIdx = 0;
         const audioMultiplier = 1.5;
-        ticker.maxFPS = fps;
+        this.ticker.maxFPS = fps;
 
         const xBuffer = 10;
         const totalXBuffer = NUM_SPECTROGRAM_SEGMENTS * xBuffer;
         let rectWidth = Math.floor((width - totalXBuffer) / NUM_SPECTROGRAM_SEGMENTS);
         const spectroGramXPadding = (width - (totalXBuffer + (NUM_SPECTROGRAM_SEGMENTS * rectWidth))) / 2;
-        ticker.add(() => {
+        this.ticker.add(() => {
             const media = sound.media;
             const buffer = media.buffer;
-            this.currentTime += ticker.elapsedMS;
+            this.currentTime += this.ticker.elapsedMS;
             if (media.buffer) {
-                if (!startTime) {
-                    startTime = this.currentTime;
-                }
                 // have 48000 data points per second
                 const data = media.buffer.getChannelData(0);
                 // get time frame from here to 16.6 ms in future
                 // TODO: get just once later
-                const { spectrogramData, endingIdx } = getSpectrogramData(buffer, data, this.startingIdx, ticker.elapsedMS, height);
+                const { spectrogramData, endingIdx } = getSpectrogramData(buffer, data, this.startingIdx, this.ticker.elapsedMS, height);
                 graphics.clear();
                 spectrogramData.map((spectrogramBlock, idx) => {
                     let x = startingX + Math.floor(idx * rectWidth)  + (xBuffer * idx) + spectroGramXPadding;
@@ -91,7 +87,7 @@ export default class AudiogramCanvas extends Component {
                 this.startingIdx = endingIdx;
             }
         });
-        ticker.start();
+        this.ticker.start();
     }
 
     componentDidMount() {
@@ -103,6 +99,11 @@ export default class AudiogramCanvas extends Component {
         if (this.props.pixiApp && !props.pixiApp) {
             console.log('start animation');
             this.startAnimation();
+        }
+        if (props.pauseAt !== this.props.pauseAt) {
+            const isPaused = this.props.pauseAt !== null;
+            isPaused && this.ticker.stop();
+            !isPaused && this.ticker.start();
         }
         if (props.restartSound !== this.props.restartSound) {
             // restart spectrogram

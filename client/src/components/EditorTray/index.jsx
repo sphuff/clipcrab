@@ -7,7 +7,7 @@ export default class EditorTray extends Component {
         const { hexColor, onColorSelect, onFileSelect, onRecord } = this.props;
         return (
             <>
-                <div className='hidden lg:flex flex-col lg:w-full h-full bg-white shadow-xl z-10 justify-between px-4 pt-4 row-span-2'>
+                <div className='hidden lg:flex flex-col lg:w-full h-full bg-white shadow-xl z-10 justify-between px-4 pt-4 row-span-3'>
                     <div className='mx-auto'>
                         <ColorPicker onColorSelect={onColorSelect} hexColor={hexColor} />
                     </div>

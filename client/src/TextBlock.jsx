@@ -6,7 +6,7 @@ import { getXPos, getYPos } from './utils';
 export default class TextBlock extends Component {
 
     animateTextBlocks(textBlocks, seekTo = 0) {
-        const { pixiApp, alignX, alignY, fontSize, lineHeight, animation, x: startingX, y: startingY, width, fps } = this.props;
+        const { pixiApp, alignX, alignY, fontSize, lineHeight, pauseAt, animation, x: startingX, y: startingY, width, fps } = this.props;
         const { stage, renderer } = pixiApp;
 
         const containerHeight = renderer.screen.height;
@@ -31,32 +31,16 @@ export default class TextBlock extends Component {
                 endTime,
             } = textBlock;
             
-            const basicText = new PIXI.Text(text, {
-                fontFamily: 'Nunito',
-                fontSize: fontSize || 36,
-                wordWrap: true,
-                wordWrapWidth: width,
-                fill: '#FFFFFF',
-                align: 'center',
-                lineHeight: lineHeight || 50,
-            });
-
+            const textEl = this.drawText(text);
+            this.textAnimations.push(textEl);
             let destY = getYPos(startingY, alignY, pixiApp);
-            basicText.x = getXPos(startingX, alignX, pixiApp);
-            basicText.zIndex = 1;
-            
-            basicText.alpha = 0;
-            basicText.anchor.set(0.5, 0);
-
-            stage.addChild(basicText);
-            this.textAnimations.push(basicText);
 
             const startTimeWithSeek = startTime - seekTo;
             const endTimeWithSeek = endTime - seekTo;
             if (animation === 'fadeInOut') {
-                this.animateTextFadeInOut(ticker, startTimeWithSeek, endTimeWithSeek, destY, basicText, fps, containerHeight, idx);
+                this.animateTextFadeInOut(ticker, startTimeWithSeek, endTimeWithSeek, destY, textEl, fps, containerHeight, idx);
             } else {
-                this.animateText(startTimeWithSeek, endTimeWithSeek, basicText, destY);
+                this.animateText(startTimeWithSeek, endTimeWithSeek, textEl, destY);
             }
 
         })}
@@ -117,7 +101,7 @@ export default class TextBlock extends Component {
     }
 
     componentDidUpdate(props) {
-        const { restartSound, textBlocks, seekTo, pixiApp: { stage }} = this.props;
+        const { restartSound, pauseAt, textBlocks, seekTo, pixiApp: { stage }} = this.props;
         console.log('text block animate');
         if (!stage) return;
         let textBlocksToAnimate = textBlocks;
@@ -128,7 +112,35 @@ export default class TextBlock extends Component {
         this.textAnimations && this.textAnimations.map(textEl => {
             stage.removeChild(textEl);
         });
+        if (props.pauseAt !== pauseAt) {
+            let textBlockToAnimate = textBlocks.find(block => block.startTime >= seekTo);
+            const textEl = this.drawText(textBlockToAnimate.text);
+            this.textAnimations.push(textEl);
+        }
         this.animateTextBlocks(textBlocksToAnimate, seekTo);
+    }
+
+    drawText(text) {
+        const { pixiApp, alignX, alignY, fontSize, lineHeight, pauseAt, x: startingX, y: startingY, width } = this.props;
+        const { stage } = pixiApp;
+        const basicText = new PIXI.Text(text, {
+            fontFamily: 'Nunito',
+            fontSize: fontSize || 36,
+            wordWrap: true,
+            wordWrapWidth: width,
+            fill: '#FFFFFF',
+            align: 'center',
+            lineHeight: lineHeight || 50,
+        });
+
+        basicText.x = getXPos(startingX, alignX, pixiApp);
+        basicText.zIndex = 1;
+        
+        basicText.alpha = 0;
+        basicText.anchor.set(0.5, 0);
+
+        stage.addChild(basicText);
+        return basicText;
     }
     
     render() {

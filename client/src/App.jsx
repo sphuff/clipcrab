@@ -132,7 +132,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { serverAudioFileURL, isLoading, loadingText, loadedTranscription, hasSelectedSound, finalVideoLocation, sound, soundFile, wordBlocks } = this.state;
+    const { serverAudioFileURL, isLoading, loadingText, loadedTranscription, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
     const isReadyForVideoEditor = loadedTranscription && sound;
 
     if (finalVideoLocation) {
@@ -157,7 +157,7 @@ export default class App extends Component {
           )}
           
           { isReadyForVideoEditor && (
-            <Editor sound={sound} soundFile={soundFile} wordBlocks={wordBlocks} config={config} uploadFile={this.uploadFile.bind(this)} encodeVideo={this.encodeVideo.bind(this)} serverAudioFileURL={serverAudioFileURL}/>
+            <Editor sound={sound} soundFile={soundFile} soundFileURL={soundFileURL} wordBlocks={wordBlocks} config={config} uploadFile={this.uploadFile.bind(this)} encodeVideo={this.encodeVideo.bind(this)} serverAudioFileURL={serverAudioFileURL}/>
           )}
         </div>
       </div>

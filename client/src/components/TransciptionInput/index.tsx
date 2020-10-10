@@ -65,7 +65,7 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
     if (!soundLoaded) return null;
     
     return (
-        <div className='bg-white h-full min-h-full p-4'>
+        <div className='bg-white h-full min-h-full p-4 overflow-y-scroll'>
             <h4 className='text-md'>Click to create animation blocks. Click again to break up blocks. Right click to edit each word. Drag for more fine-grained control of blocks.</h4>
             <div className={`transcriptionInput-container`}>
                 {wordBlocks.map((wordBlock, idx) => {

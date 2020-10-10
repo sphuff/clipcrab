@@ -18,6 +18,7 @@ export default class Editor extends Component {
             restartSound: 0,
             app: null,
             finishedEncoding: false,
+            pauseTime: null,
             textBlocks: [],
         };
     }
@@ -57,10 +58,16 @@ export default class Editor extends Component {
     }
 
     onUpdateTextBlocks(textBlocks, seekTo) {
-        this.setState({
-          textBlocks,
-          seekTo: seekTo,
-        });
+      this.audioSeek(seekTo);
+      this.setState({
+        textBlocks,
+      });
+    }
+
+    audioSeek(seekTo) {
+      this.setState({
+        seekTo,
+      });
     }
 
     onColorSelect(hexColor) {
@@ -119,6 +126,32 @@ export default class Editor extends Component {
         }, timeout);
     }
 
+    playAudio() {
+      if (this.state.pauseTime) {
+        this.setState({
+          pauseTime: null,
+        }, () => {
+          this.props.sound.play({
+            start: this.state.pauseTime,
+          });
+        });
+      } else {
+        this.props.sound.resume();
+      }
+    }
+
+    pauseAudio() {
+      const instance = this.props.sound.instances[0] ? this.props.sound.instances[0] : null;
+      if (!instance) return;
+      const { progress } = instance;
+      const pauseTime = progress * this.props.sound.duration;
+      this.setState({
+        pauseTime: pauseTime,
+      }, () => {
+        this.props.sound.pause();
+      });
+    }
+
     clearVideoAndAudio() {
       const { app } = this.state;
       app.stage.visible = false;
@@ -128,27 +161,27 @@ export default class Editor extends Component {
     }
 
     render() {
-        const { sound, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
-        const { app, hexColor, textBlocks, coverImage, restartSound, seekTo, finishedEncoding } = this.state;
+        const { sound, soundFileURL, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
+        const { app, hexColor, textBlocks, coverImage, pauseTime, restartSound, seekTo, finishedEncoding } = this.state;
 
         return (
-            <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor'>
-                {/* <Timeline soundFileURL={soundFileURL} textBlocks={textBlocks} onSeek={this.onAudioSeek.bind(this)} duration={sound && sound.duration}/> */}
+            <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>
                 { finishedEncoding && (
                   <div>Finished Encoding</div>
-                )}
+                  )}
                 <div className='flex-1 flex justify-center items-center'>
                   <div className='bg-gray-200 p-8'>
                     <canvas id="myCanvas" className='rounded shadow-lg'></canvas>
                   </div>
                 </div>
                 <EditorTray onRecord={this.recordVideo.bind(this)} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onFileSelect={this.selectedCoverImage.bind(this)}/>
+                <Timeline soundFileURL={soundFileURL} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
                 {/* might need to render for sound loaded */}
                 <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)}/>
                 <Background pixiApp={app} hexColor={hexColor}/>
                 <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
-                <TextBlock pixiApp={app} restartSound={restartSound} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks}/>
-                <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound}/>
+                <TextBlock pixiApp={app} restartSound={restartSound} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
+                <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
                 {/* <Audiogram /> */}
             </div>
         );

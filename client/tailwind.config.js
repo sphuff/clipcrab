@@ -35,7 +35,7 @@ module.exports = {
         'editor': '1fr 319px', // color picker width + 48
       },
       gridTemplateRows: {
-        'editor': '1fr 20%',
+        'editor': '1fr 100px 20%',
       }
     },
   },
