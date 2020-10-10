@@ -7,6 +7,7 @@ import TranscriptionInput from '../TransciptionInput';
 import Timeline from '../Timeline';
 import * as PIXI from 'pixi.js';
 import EditorTray from '../EditorTray';
+import LoadingIndicator from '../LoadingIndicator';
 
 export default class Editor extends Component {
     constructor(props) {
@@ -20,6 +21,7 @@ export default class Editor extends Component {
             finishedEncoding: false,
             pauseTime: null,
             isPlayingAudio: true,
+            isRecording: false,
             textBlocks: [],
         };
     }
@@ -99,6 +101,7 @@ export default class Editor extends Component {
         this.setState({
           restartSound: restartSound + 1,
           seekTo: 0,
+          isRecording: true,
         });
         
         const mediaRecorder = new MediaRecorder(videoStream, options);
@@ -160,18 +163,26 @@ export default class Editor extends Component {
       app.stage.visible = false;
       this.setState({
         finishedEncoding: true,
+        isRecording: false,
       });
     }
 
     render() {
         const { sound, soundFileURL, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
-        const { app, hexColor, textBlocks, isPlayingAudio, coverImage, pauseTime, restartSound, seekTo, finishedEncoding } = this.state;
+        const { app, hexColor, textBlocks, isPlayingAudio, coverImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
 
         return (
             <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>
                 { finishedEncoding && (
                   <div>Finished Encoding</div>
                   )}
+                { isRecording && (
+                  <div className='z-20 absolute top-0 h-screen w-screen bg-gray-500 bg-opacity-75 flex justify-center items-center'>
+                    <div className='p-4 relative rounded bg-white'>
+                      <LoadingIndicator text={'Now recording. Please wait to complete'} />
+                    </div>
+                  </div>
+                )}
                 <div className='flex-1 flex justify-center items-center'>
                   <div className='bg-gray-200 p-8'>
                     <canvas id="myCanvas" className='rounded shadow-lg'></canvas>
