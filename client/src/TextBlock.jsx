@@ -101,7 +101,7 @@ export default class TextBlock extends Component {
     }
 
     componentDidUpdate(props) {
-        const { restartSound, pauseAt, textBlocks, seekTo, pixiApp: { stage }} = this.props;
+        const { restartSound, pauseAt, alignY, y: startingY, textBlocks, seekTo, pixiApp, pixiApp: { stage }} = this.props;
         console.log('text block animate');
         if (!stage) return;
         let textBlocksToAnimate = textBlocks;
@@ -112,15 +112,22 @@ export default class TextBlock extends Component {
         this.textAnimations && this.textAnimations.map(textEl => {
             stage.removeChild(textEl);
         });
-        if (props.pauseAt !== pauseAt) {
-            let textBlockToAnimate = textBlocks.find(block => block.startTime >= seekTo);
-            const textEl = this.drawText(textBlockToAnimate.text);
-            this.textAnimations.push(textEl);
+        if (pauseAt !== null) {
+            // start < pause < end
+            let textBlockToAnimate = textBlocks.filter(block => block.startTime <= pauseAt && pauseAt <= block.endTime).shift();
+            console.log(pauseAt, textBlocks, textBlockToAnimate);
+            const y = getYPos(startingY, alignY, pixiApp);
+            // if textblock undefined - you have stopped between animations
+            if (textBlockToAnimate) {
+                const textEl = this.drawText(textBlockToAnimate.text, y, true);
+                this.textAnimations.push(textEl);
+            }
+            return;
         }
         this.animateTextBlocks(textBlocksToAnimate, seekTo);
     }
 
-    drawText(text) {
+    drawText(text, y = null, isVisible = false) {
         const { pixiApp, alignX, alignY, fontSize, lineHeight, pauseAt, x: startingX, y: startingY, width } = this.props;
         const { stage } = pixiApp;
         const basicText = new PIXI.Text(text, {
@@ -135,8 +142,12 @@ export default class TextBlock extends Component {
 
         basicText.x = getXPos(startingX, alignX, pixiApp);
         basicText.zIndex = 1;
+
+        if (y) {
+            basicText.y = y;
+        }
         
-        basicText.alpha = 0;
+        basicText.alpha = isVisible ? 1 : 0;
         basicText.anchor.set(0.5, 0);
 
         stage.addChild(basicText);

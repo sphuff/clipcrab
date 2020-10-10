@@ -1,8 +1,7 @@
 import React, { Component, useEffect, useState } from 'react';
 
-export default function Timeline({ soundFileURL, playAudio, pauseAudio, duration, onSeek }) {
+export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, pauseAudio, duration, onSeek }) {
     const [isLoaded, setIsLoaded] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(true);
     const waveformRef = React.createRef();
 
     const initTimeline = () => {
@@ -38,14 +37,9 @@ export default function Timeline({ soundFileURL, playAudio, pauseAudio, duration
     useEffect(() => {
         console.log('loaded effect');
     }, [isLoaded]);
-    
-    useEffect(() => {
-        console.log('playing', isPlaying);
-    }, [isPlaying]);
 
     const togglePlay = () => {
-        const newIsPlaying = !isPlaying;
-        setIsPlaying(newIsPlaying);
+        const newIsPlaying = !isPlayingAudio;
         newIsPlaying && playAudio();
         !newIsPlaying && pauseAudio();
     }
@@ -57,7 +51,7 @@ export default function Timeline({ soundFileURL, playAudio, pauseAudio, duration
                 <div id="wave-timeline" className=''></div>
             </div>
             <div className='bg-white rounded px-4 py-2'>
-                <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'} cursor-pointer my-auto text-gray-600 hover:text-gray-800`} onClick={() => togglePlay()}></i>
+                <i className={`fas ${isPlayingAudio ? 'fa-pause' : 'fa-play'} cursor-pointer my-auto text-gray-600 hover:text-gray-800`} onClick={() => togglePlay()}></i>
             </div>
         </div>
     );

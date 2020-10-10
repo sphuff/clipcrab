@@ -19,6 +19,7 @@ export default class Editor extends Component {
             app: null,
             finishedEncoding: false,
             pauseTime: null,
+            isPlayingAudio: true,
             textBlocks: [],
         };
     }
@@ -67,6 +68,8 @@ export default class Editor extends Component {
     audioSeek(seekTo) {
       this.setState({
         seekTo,
+        pauseTime: null,
+        isPlayingAudio: true,
       });
     }
 
@@ -130,13 +133,10 @@ export default class Editor extends Component {
       if (this.state.pauseTime) {
         this.setState({
           pauseTime: null,
+          isPlayingAudio: true,
         }, () => {
-          this.props.sound.play({
-            start: this.state.pauseTime,
-          });
+          this.props.sound.resume();
         });
-      } else {
-        this.props.sound.resume();
       }
     }
 
@@ -145,8 +145,11 @@ export default class Editor extends Component {
       if (!instance) return;
       const { progress } = instance;
       const pauseTime = progress * this.props.sound.duration;
+      // set seekTo for text animation when replayed
       this.setState({
         pauseTime: pauseTime,
+        isPlayingAudio: false,
+        seekTo: pauseTime,
       }, () => {
         this.props.sound.pause();
       });
@@ -162,7 +165,7 @@ export default class Editor extends Component {
 
     render() {
         const { sound, soundFileURL, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
-        const { app, hexColor, textBlocks, coverImage, pauseTime, restartSound, seekTo, finishedEncoding } = this.state;
+        const { app, hexColor, textBlocks, isPlayingAudio, coverImage, pauseTime, restartSound, seekTo, finishedEncoding } = this.state;
 
         return (
             <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>
@@ -175,7 +178,7 @@ export default class Editor extends Component {
                   </div>
                 </div>
                 <EditorTray onRecord={this.recordVideo.bind(this)} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onFileSelect={this.selectedCoverImage.bind(this)}/>
-                <Timeline soundFileURL={soundFileURL} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
+                <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
                 {/* might need to render for sound loaded */}
                 <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)}/>
                 <Background pixiApp={app} hexColor={hexColor}/>
