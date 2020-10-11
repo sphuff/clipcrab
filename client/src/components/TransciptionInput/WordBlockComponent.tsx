@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { NORMAL_ALPHA, HOVER_ALPHA } from '../../constants';
+import { Tooltip, Overlay } from 'react-bootstrap';
 import './index.scss';
 import WordBlock from './WordBlock';
+
+const NO_CHILDREN_TOOLTIP_MESSAGE = 'no children';
+const CHILDREN_TOOLTIP_MESSAGE = 'children';
 
 export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wordBlock: WordBlock, updateTextBlocks: Function}) {
     const [isEditing, setIsEditing] = useState(false);
 
-    const ref: React.RefObject<any> = React.createRef();
+    const ref: React.RefObject<any> = useRef(null);
     const editRef: React.RefObject<any> = React.createRef();
     wordBlock.ref = ref;
     const [text, setText] = useState(wordBlock.word);
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipText, setTooltipText] = useState(getTooltipText(wordBlock));
+
     useEffect(() => {
         setText(wordBlock.getText());
     }, []);
@@ -22,13 +29,14 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
     const onHoverOver = (evt: any, wordBlock: WordBlock) => {
         if (!wordBlock.ref) return;
         wordBlock.ref.current.style.backgroundColor = `${wordBlock.rgba.replace(NORMAL_ALPHA, HOVER_ALPHA)}`
-        // changeCursor(evt);
+        setShowTooltip(true);
     }
     
     const onHoverLeave = (evt: React.MouseEvent<HTMLSpanElement>, wordBlock: WordBlock) => {
         if (!wordBlock.ref) return;
         wordBlock.ref.current.style.backgroundColor = `${wordBlock.rgba.replace(HOVER_ALPHA, NORMAL_ALPHA)}`
         wordBlock.ref.current.style.cursor = '';
+        setShowTooltip(false);
     }
 
     const changeCursor = (evt: any) => {
@@ -125,20 +133,31 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
         );
     }
     return (
-        <span className='transcriptionInput-word text-sm'
-            ref={ref}
-            onMouseEnter={(evt) => onHoverOver(evt, wordBlock)}
-            onMouseMove={(evt) => onHoverOver(evt, wordBlock)}
-            onMouseLeave={(evt) => onHoverLeave(evt, wordBlock)}
-            onDrag={(evt) => onDrag(evt, wordBlock)}
-            onAuxClick={() => editWordBlock()}
-            onClick={(evt) => onClick(evt, wordBlock)}
-            onDragEnd={() => updateTextBlocks(wordBlock)}
-            onContextMenu={(evt) => evt.preventDefault()}
-            draggable={true}
-            style={{backgroundColor: `${rgba}`, display: wordBlock.isActive ? 'inline-block' : 'none'}}
-        >
-            {text}
-        </span>
+        <>
+            <span className='transcriptionInput-word text-sm'
+                ref={ref}
+                onMouseEnter={(evt) => onHoverOver(evt, wordBlock)}
+                onMouseMove={(evt) => onHoverOver(evt, wordBlock)}
+                onMouseLeave={(evt) => onHoverLeave(evt, wordBlock)}
+                onDrag={(evt) => onDrag(evt, wordBlock)}
+                onAuxClick={() => editWordBlock()}
+                onClick={(evt) => onClick(evt, wordBlock)}
+                onDragEnd={() => updateTextBlocks(wordBlock)}
+                onContextMenu={(evt) => evt.preventDefault()}
+                draggable={true}
+                style={{backgroundColor: `${rgba}`, display: wordBlock.isActive ? 'inline-block' : 'none'}}
+            >
+                {text}
+            </span>
+            <Overlay target={ref.current} show={showTooltip} placement='right'>
+                <Tooltip id={`tooltip-wordblock-${wordBlock.id}`}>
+                    { tooltipText }
+                </Tooltip>
+            </Overlay>
+        </>
     );
+}
+
+const getTooltipText = (wordBlock: WordBlock): string => {
+    return wordBlock.hasChildren() ? CHILDREN_TOOLTIP_MESSAGE : NO_CHILDREN_TOOLTIP_MESSAGE;
 }

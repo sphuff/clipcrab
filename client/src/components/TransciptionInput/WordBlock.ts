@@ -57,6 +57,10 @@ export default class WordBlock {
         }
     }
 
+    hasChildren(): Boolean {
+        return this.children.length > 0;
+    }
+
     removeChild (childBlock: WordBlock|undefined) {
         if (!childBlock || !childBlock.ref || !this.ref) return;
         this.children = this.children.filter(child => child.id !== childBlock.id);
