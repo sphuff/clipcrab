@@ -67,7 +67,6 @@ module.exports = {
                 s3.headObject(params, (err, data) => {
                     if (err && err.code === 'NotFound') {  
                         // Handle no object on cloud here  
-                        console.log(err);
                         resolve(STATUS_NOT_TRANSCODED);
                     } else {
                         resolve(STATUS_TRANSCODED);
