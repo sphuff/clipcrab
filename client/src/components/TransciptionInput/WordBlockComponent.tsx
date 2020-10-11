@@ -104,6 +104,10 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
             return;
         }
         let firstInBlock = wordBlock;
+        if (wordBlock.prev === undefined || wordBlock.prev.parentWord !== undefined) {
+            // if is first word, or first word outside of block, do nothing
+            return;
+        }
         while (firstInBlock.prev !== undefined && firstInBlock.prev.parentWord === undefined && !firstInBlock.prev.isDeleted) {
             firstInBlock = firstInBlock.prev;
         }
@@ -134,7 +138,7 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
     }
     return (
         <>
-            <span className='transcriptionInput-word text-sm'
+            <span className='transcriptionInput-word text-sm cursor-pointer'
                 ref={ref}
                 onMouseEnter={(evt) => onHoverOver(evt, wordBlock)}
                 onMouseMove={(evt) => onHoverOver(evt, wordBlock)}
