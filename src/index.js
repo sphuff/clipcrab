@@ -36,7 +36,7 @@ server.use(
       useTempFiles: true,
       safeFileNames: true,
       preserveExtension: true,
-      tempFileDir: `${__dirname}/tmp`
+      tempFileDir: `/tmp`
     })
   );
 
@@ -80,7 +80,7 @@ server.post('/upload', (req, res, next) => {
     let uploadFile = req.files.file;
     const name = uploadFile.name;
     const saveAs = `${name}`;
-    const fileLocation = `${__dirname}/files/${saveAs}`;
+    const fileLocation = `/tmp/${saveAs}`;
 
     uploadFile.mv(fileLocation, async function(err) {
       if (err) {

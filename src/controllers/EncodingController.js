@@ -7,7 +7,7 @@ module.exports = class EncodingController {
             console.log(videoURL);
             console.log(audioURL);
             const videoFilename = path.basename(videoURL);
-            const outputLocation = path.join(__dirname, `../transcoded/${videoFilename}`);
+            const outputLocation = `/tmp/transcoded/${videoFilename}`;
             console.log(outputLocation);
             try {
                 exec(`ffmpeg -i ${videoURL} -i ${audioURL} -y -c:v libx264 -preset fast -c:a aac ${outputLocation}`, (err, stdout, stderr) => {

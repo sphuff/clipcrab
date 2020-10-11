@@ -66,8 +66,8 @@ export default class App extends Component {
     formData.append('file', file);
     let res = await Axios.post(makeServerURL('/upload'), formData);
     console.log(res);
-    const { serverFileURL, s3FileURL } = res.data;
-    return { serverFileURL, s3FileURL };
+    const { s3FileURL } = res.data;
+    return { s3FileURL };
   }
 
   async requestTranscription(fileURL) {
