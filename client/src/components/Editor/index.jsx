@@ -21,6 +21,7 @@ export default class Editor extends Component {
             finishedEncoding: false,
             pauseTime: null,
             isRecording: false,
+            loadingText: null,
             textBlocks: [],
         };
     }
@@ -165,7 +166,7 @@ export default class Editor extends Component {
     }
 
     render() {
-        const { sound, soundFileURL, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
+        const { sound, soundFileURL, loadingText, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
         const { app, hexColor, textBlocks, coverImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
         const isPlayingAudio = !(!!pauseTime);
 
@@ -177,7 +178,7 @@ export default class Editor extends Component {
                 { isRecording && (
                   <div className='z-20 absolute top-0 h-screen w-screen bg-gray-500 bg-opacity-75 flex justify-center items-center'>
                     <div className='p-4 relative rounded bg-white'>
-                      <LoadingIndicator text={'Now recording. Please wait to complete'} />
+                      <LoadingIndicator text={loadingText ? loadingText : 'Now recording. Please wait to complete'} />
                     </div>
                   </div>
                 )}
