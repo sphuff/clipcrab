@@ -7,6 +7,7 @@ import { hexToRGB, getRandomColorHex, makeServerURL } from './utils';
 import { NORMAL_ALPHA, } from './constants';
 import Axios from 'axios';
 import FileSelector from './FileSelector';
+import axiosRetry from 'axios-retry';
 
 import Editor from './components/Editor';
 import LoadingIndicator from './components/LoadingIndicator';
@@ -70,9 +71,13 @@ export default class App extends Component {
   }
 
   async requestTranscription(fileURL) {
-    let res = await Axios.post(makeServerURL('/transcribe'), { audioURL: fileURL });
-    console.log(res);
-    const { wordBlocks } = res.data;
+    const res = await Axios.post(makeServerURL('/transcribe'), { audioURL: fileURL });
+    const { jobId } = res.data;
+    const axiosInstance = Axios.create();
+    axiosRetry(axiosInstance, { retries: 50, retryDelay: (retryCount) => retryCount * 1000 });
+    const transcriptionRes = await axiosInstance.get(makeServerURL('/transcription'), { params: { jobId } });
+    const { wordBlocks } = transcriptionRes.data;
+
     this.setState({
       loadedTranscription: true,
       isLoading: false,

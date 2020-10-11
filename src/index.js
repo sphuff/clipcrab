@@ -18,7 +18,7 @@ console.log('ENV: ', process.env.NODE_ENV)
 
 const AWSService = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
-const TranscriptionController = require('./controllers/TranscriptionController');
+const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
 
 server.use(bodyParser.json());
@@ -56,9 +56,23 @@ server.post('/encode', async (req, res) => {
 
 server.post('/transcribe', async (req, res) => {
     const { audioURL } = req.body;
-    const isProd = process.env.NODE_ENV === 'production';
-    const wordBlocks = await TranscriptionController.getWordBlocks(audioURL, isProd);
-    res.json({ wordBlocks });
+    const isProd = true;
+    // const isProd = process.env.NODE_ENV === 'production';
+    const jobId = await TranscriptionController.submitTranscriptionJob(audioURL, isProd)
+    res.json({ jobId });
+});
+
+server.get('/transcription', async (req, res) => {
+  const { jobId } = req.query;
+  const isProd = true;
+  // const isProd = process.env.NODE_ENV === 'production';
+  const transcriptionStatus = await TranscriptionController.getTranscriptionStatus(jobId);
+  if (transcriptionStatus !== STATUS_TRANSCRIBED) {
+    console.log('not ready');
+    return res.status(503).send();
+  }
+  const wordBlocks = await TranscriptionController.getWordBlocks(jobId, isProd);
+  res.json({ wordBlocks });
 });
 
 
