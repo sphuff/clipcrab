@@ -153,7 +153,7 @@ export default class App extends Component {
     if (finalVideoLocation) {
       return (
         <div className="appContainer">
-          Congrats, you can download your video by clicking <a href={finalVideoLocation} download>here</a>
+          Congrats, you can download your video by clicking <a href={finalVideoLocation} className='text-blue-400' download>here</a>
         </div>
       );
     }
