@@ -1,1 +1,1 @@
-web: npm start
+web: mkdir /tmp/transcoded && npm start
