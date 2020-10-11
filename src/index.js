@@ -46,7 +46,12 @@ server.post('/encode', async (req, res) => {
     console.log('encode', videoLocation, audioLocation);
     let localOutputLocation = path.join(__dirname, './transcoded/test.mp4');
     if (process.env.NODE_ENV === 'production') {
-      localOutputLocation = await EncodingController.combineAudioAndVideo(audioLocation, videoLocation);
+      try {
+        localOutputLocation = await EncodingController.combineAudioAndVideo(audioLocation, videoLocation);
+      } catch(err) {
+        console.log('encoding error:', err.message);
+        res.status(500).json({ error: err.message })
+      }
     }
     const filename = path.basename(localOutputLocation);
     await AWSService.uploadTranscoding(localOutputLocation, filename);
