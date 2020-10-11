@@ -107,7 +107,7 @@ export default class TextBlock extends Component {
         let textBlocksToAnimate = textBlocks;
         if (props.seekTo !== seekTo) {
             // only get text blocks past seekTo
-            textBlocksToAnimate = textBlocks.filter(block => block.startTime >= seekTo);
+            textBlocksToAnimate = textBlocks.filter(block => block.endTime >= seekTo);
         }
         this.textAnimations && this.textAnimations.map(textEl => {
             stage.removeChild(textEl);

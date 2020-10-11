@@ -166,7 +166,7 @@ export default class Editor extends Component {
     render() {
         const { sound, soundFileURL, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
         const { app, hexColor, textBlocks, coverImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
-        const isPlayingAudio = !!pauseTime;
+        const isPlayingAudio = !(!!pauseTime);
 
         return (
             <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>

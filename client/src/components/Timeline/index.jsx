@@ -7,9 +7,9 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
     const initTimeline = () => {
         let wavesurfer = window.WaveSurfer.create({
             container: '#waveform',
-            waveColor: 'violet',
+            waveColor: '#a0aec0', // gray-500
             height: 50,
-            progressColor: 'purple',
+            progressColor: '#4a5568', // gray-700
             plugins: [
                 window.WaveSurfer.timeline.create({
                     container: "#wave-timeline"
@@ -19,7 +19,7 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
         wavesurfer.load(soundFileURL);
         setIsLoaded(true);
         wavesurfer.on('seek', function (seekPercentage) {
-            console.log('seek in timeline');
+            console.log('seek in timeline', seekPercentage);
             onSeek(duration * seekPercentage);
         });
     }
