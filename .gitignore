@@ -3,5 +3,5 @@
 .env
 node_modules
 src/files
-src/transcoded
+src/transcoded/*
 build

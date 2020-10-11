@@ -1,7 +1,5 @@
 import React, { useEffect, Component } from 'react';
-import mp3 from './mmbam.mp3';
 import * as PIXI from 'pixi.js';
-import pixiSound from 'pixi-sound';
 import { getXPos } from './utils';
 
 const NUM_SPECTROGRAM_SEGMENTS = 18;

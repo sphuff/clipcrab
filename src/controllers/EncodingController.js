@@ -2,15 +2,15 @@ const path = require('path');
 const { exec, execSync } = require('child_process');
 
 module.exports = class EncodingController {
-    static combineAudioAndVideo(audioPath, videoPath) {
+    static combineAudioAndVideo(audioURL, videoURL) {
         return new Promise((resolve, reject) => {
-            console.log(videoPath);
-            console.log(audioPath);
-            const videoFilename = path.basename(videoPath);
+            console.log(videoURL);
+            console.log(audioURL);
+            const videoFilename = path.basename(videoURL);
             const outputLocation = path.join(__dirname, `../transcoded/${videoFilename}`);
             console.log(outputLocation);
             try {
-                exec(`ffmpeg -i ${videoPath} -i ${audioPath} -y -c:v libx264 -preset fast -c:a aac ${outputLocation}`, (err, stdout, stderr) => {
+                exec(`ffmpeg -i ${videoURL} -i ${audioURL} -y -c:v libx264 -preset fast -c:a aac ${outputLocation}`, (err, stdout, stderr) => {
                     console.log(stdout);
                     console.log(stderr)
                     resolve(outputLocation);

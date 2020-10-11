@@ -101,9 +101,9 @@ export default class App extends Component {
       hasSelectedSound: true,
       loadingText: 'Uploading audio',
     });
-    const { serverFileURL, s3FileURL } = await this.uploadFile(file);
+    const { s3FileURL } = await this.uploadFile(file);
     this.setState({
-      serverAudioFileURL: serverFileURL,
+      serverAudioFileURL: s3FileURL,
       loadingText: 'Transcribing text',
     });
     await this.loadSound(file);

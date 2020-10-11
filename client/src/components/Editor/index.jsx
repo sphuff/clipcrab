@@ -116,7 +116,7 @@ export default class Editor extends Component {
           });
           const date = new Date();
           const videoFile = new File([videoBlob], `${soundFile.name}-${date.toISOString()}.mp4`);
-          const { serverFileURL: serverVideoFileURL } = await uploadFile(videoFile);
+          const { s3FileURL: serverVideoFileURL } = await uploadFile(videoFile);
           this.setState({
             serverVideoFileURL: serverVideoFileURL,
           });
