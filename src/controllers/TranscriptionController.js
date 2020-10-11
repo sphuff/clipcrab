@@ -21,7 +21,10 @@ module.exports = {
             return this._getWordBlocks(transcript);
         }
     
-        static async getTranscriptionStatus(jobId) {
+        static async getTranscriptionStatus(jobId, isProd) {
+            if (!isProd) {
+                return STATUS_TRANSCRIBED;
+            }
             const jobDetails = await client.getJobDetails(jobId);
             if (jobDetails.status === STATUS_TRANSCRIBED) {
                 return STATUS_TRANSCRIBED;

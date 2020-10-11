@@ -56,17 +56,17 @@ server.post('/encode', async (req, res) => {
 
 server.post('/transcribe', async (req, res) => {
     const { audioURL } = req.body;
-    const isProd = true;
-    // const isProd = process.env.NODE_ENV === 'production';
+    // const isProd = true;
+    const isProd = process.env.NODE_ENV === 'production';
     const jobId = await TranscriptionController.submitTranscriptionJob(audioURL, isProd)
     res.json({ jobId });
 });
 
 server.get('/transcription', async (req, res) => {
   const { jobId } = req.query;
-  const isProd = true;
-  // const isProd = process.env.NODE_ENV === 'production';
-  const transcriptionStatus = await TranscriptionController.getTranscriptionStatus(jobId);
+  // const isProd = true;
+  const isProd = process.env.NODE_ENV === 'production';
+  const transcriptionStatus = await TranscriptionController.getTranscriptionStatus(jobId, isProd);
   if (transcriptionStatus !== STATUS_TRANSCRIBED) {
     console.log('not ready');
     return res.status(503).send();

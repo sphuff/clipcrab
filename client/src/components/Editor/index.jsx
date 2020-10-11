@@ -99,6 +99,7 @@ export default class Editor extends Component {
         this.setState({
           restartSound: restartSound + 1,
           seekTo: 0,
+          pauseTime: null,
           isRecording: true,
         });
         
