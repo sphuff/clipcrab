@@ -45,10 +45,16 @@ export default class App extends Component {
         audioLocation: serverAudioFileURL,
       }),
     });
-    console.log(res);
     const json = await res.json();
+    const fileName = json.fileName;
+
+    const axiosInstance = Axios.create();
+    axiosRetry(axiosInstance, { retries: 50, retryDelay: (retryCount) => retryCount * 1000 });
+    let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }});
+
+    console.log(encodingRes);
     this.setState({
-      finalVideoLocation: json.finalVideoLocation,
+      finalVideoLocation: encodingRes.data.finalVideoLocation,
     });
   }
 

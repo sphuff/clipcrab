@@ -16,7 +16,7 @@ const fileUpload = require('express-fileupload');
 
 console.log('ENV: ', process.env.NODE_ENV)
 
-const AWSService = require('./services/AWSService');
+const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
@@ -55,9 +55,20 @@ server.post('/encode', async (req, res) => {
     }
     const filename = path.basename(localOutputLocation);
     await AWSService.uploadTranscoding(localOutputLocation, filename);
-    const s3Location = await AWSService.getTranscodedFile(filename);
-    res.json({ finalVideoLocation: s3Location });
+    res.json({ fileName: filename });
 });
+
+server.get('/encoding', async (req, res) => {
+  const { fileName } = req.query;
+  const transcriptionStatus = await AWSService.getTranscodingStatus(fileName);
+  if (transcriptionStatus !== STATUS_TRANSCODED) {
+    console.log('transcode not ready');
+    return res.status(503).send();
+  }
+  const s3Location = AWSService.getTranscodedFile(fileName);
+  res.json({ finalVideoLocation: s3Location });
+});
+
 
 server.post('/transcribe', async (req, res) => {
     const { audioURL } = req.body;
