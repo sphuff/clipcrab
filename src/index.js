@@ -1,8 +1,17 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const server = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+
+const sessionMiddleware = require('./middleware/sessionMiddleware');
+const authMiddleware = require('./middleware/authMiddleware');
+const userInViews = require('./middleware/userInViews');
+
 const fileUpload = require('express-fileupload');
 
 console.log('ENV: ', process.env.NODE_ENV)
@@ -15,6 +24,12 @@ server.use(bodyParser.json());
 server.use(cors());
 
 server.use(express.static(path.join(__dirname, '../', 'client/build')));
+
+sessionMiddleware(server);
+authMiddleware(server);
+server.use(userInViews());
+server.use(authRoutes);
+server.use('/', userRoutes);
 
 server.use(
     fileUpload({
