@@ -31,7 +31,6 @@ server.use(userInViews());
 server.use(authRoutes);
 server.use('/', userRoutes);
 
-server.use(secured(), express.static(path.join(__dirname, '../', 'client/build')));
 server.use(
     fileUpload({
       useTempFiles: true,
@@ -82,8 +81,22 @@ server.post('/upload', (req, res, next) => {
     });
   });
 
+server.get('/auth0-logo', (req, res) => {
+  res.sendFile(path.join(__dirname, '../', 'client/assets/auth0-logo.png'));
+});
+
+// weird but secure index.html and let rest through
+server.get('/', secured(), (req, res) => {
+  path.join(__dirname, '../', 'client/build/index.html')
+});
+server.get('/index.html', secured(), (req, res) => {
+  path.join(__dirname, '../', 'client/build/index.html')
+});
+
+server.use(express.static(path.join(__dirname, '../', 'client/build')));
+
 server.get('*', (req,res) =>{
-    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+    res.sendFile(path.join(__dirname, '../', 'client/build/index.html'));
 });
   
 
