@@ -18,7 +18,7 @@ router.get('/callback', function (req, res, next) {
         console.log('log in success');
         const returnTo = req.session.returnTo;
         delete req.session.returnTo;
-        res.redirect(returnTo || '/user');
+        res.redirect(returnTo || '/');
       });
     })(req, res, next);
 });

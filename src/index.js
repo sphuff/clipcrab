@@ -19,11 +19,11 @@ console.log('ENV: ', process.env.NODE_ENV)
 const AWSService = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
 const TranscriptionController = require('./controllers/TranscriptionController');
+const secured = require('./middleware/secured');
 
 server.use(bodyParser.json());
 server.use(cors());
 
-server.use(express.static(path.join(__dirname, '../', 'client/build')));
 
 sessionMiddleware(server);
 authMiddleware(server);
@@ -31,6 +31,7 @@ server.use(userInViews());
 server.use(authRoutes);
 server.use('/', userRoutes);
 
+server.use(secured(), express.static(path.join(__dirname, '../', 'client/build')));
 server.use(
     fileUpload({
       useTempFiles: true,
