@@ -2,10 +2,11 @@ import React, { Component, useEffect, useState } from 'react';
 
 export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, pauseAudio, duration, onSeek }) {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [wavesurfer, setWavesurfer] = useState(null);
     const waveformRef = React.createRef();
 
     const initTimeline = () => {
-        let wavesurfer = window.WaveSurfer.create({
+        const wavesurferInst = window.WaveSurfer.create({
             container: '#waveform',
             waveColor: '#a0aec0', // gray-500
             height: 50,
@@ -16,15 +17,19 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
                 })
             ]
         });
-        wavesurfer.load(soundFileURL);
+        setWavesurfer(wavesurferInst);
+        wavesurferInst.load(soundFileURL);
         setIsLoaded(true);
-        wavesurfer.on('seek', function (seekPercentage) {
+        wavesurferInst.on('ready', function () {
+            wavesurferInst.setMute(true);
+            wavesurferInst.play();
+        });
+        wavesurferInst.on('seek', function (seekPercentage) {
             console.log('seek in timeline', seekPercentage);
             onSeek(duration * seekPercentage);
         });
     }
-    // TODO: play muted when the audio is playing in the background
-    // seek function that hooks up with parent/AudioCanvas
+    
     useEffect(() => {
         console.log('timeline effect');
         const createVisual = async (soundFileURL) => {
@@ -40,8 +45,13 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
 
     const togglePlay = () => {
         const newIsPlaying = !isPlayingAudio;
-        newIsPlaying && playAudio();
-        !newIsPlaying && pauseAudio();
+        if (newIsPlaying) {
+            wavesurfer.play();
+            playAudio();
+        } else {
+            wavesurfer.pause();
+            pauseAudio();
+        }
     }
 
     return (
