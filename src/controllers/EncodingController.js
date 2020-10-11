@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const { exec, execSync } = require('child_process');
 
 module.exports = class EncodingController {
@@ -7,7 +8,11 @@ module.exports = class EncodingController {
             console.log(videoURL);
             console.log(audioURL);
             const videoFilename = path.basename(videoURL);
-            const outputLocation = `/tmp/transcoded/${videoFilename}`;
+            const dir = '/tmp/transcoded';
+            if (!fs.existsSync(dir)){
+                fs.mkdirSync(dir);
+            }
+            const outputLocation = `${dir}/${videoFilename}`;
             console.log(outputLocation);
             try {
                 exec(`ffmpeg -i ${videoURL} -i ${audioURL} -y -c:v libx264 -preset fast -c:a aac ${outputLocation}`, (err, stdout, stderr) => {
