@@ -24,10 +24,10 @@
             "width": 337.5,
             "height": 600,
             "audiogram": {
-                "height": 300,
-                "width": 550,
+                "height": 97,
+                "width": 275,
                 "alignX": "center",
-                "y": 950
+                "y": 450
             },
             "text": {
                 "alignX": "center",

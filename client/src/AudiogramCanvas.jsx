@@ -40,6 +40,7 @@ const getSpectrogramData = (buffer, data, startingIdx, elapsedMs, height) => {
 
 export default class AudiogramCanvas extends Component {
     startAnimation() {
+        console.log('start animation');
         const { pixiApp, sound, alignX, x, y: startingY, width, height, fps } = this.props;
         const { stage } = pixiApp;
     
@@ -48,9 +49,13 @@ export default class AudiogramCanvas extends Component {
         this.currentTime = 0;
         this.ticker = PIXI.Ticker.shared;
         this.ticker.autoStart = false;
-        let graphics = new PIXI.Graphics();
-        stage.addChild(graphics);
-        graphics.zIndex = 1;
+        if (this.graphics) {
+            this.graphics.clear();
+            this.graphics = null;
+        }
+        this.graphics = new PIXI.Graphics();
+        stage.addChild(this.graphics);
+        this.graphics.zIndex = 3;
         this.startingIdx = 0;
         const audioMultiplier = 1.5;
         this.ticker.maxFPS = fps;
@@ -59,7 +64,7 @@ export default class AudiogramCanvas extends Component {
         const totalXBuffer = NUM_SPECTROGRAM_SEGMENTS * xBuffer;
         let rectWidth = Math.floor((width - totalXBuffer) / NUM_SPECTROGRAM_SEGMENTS);
         const spectroGramXPadding = (width - (totalXBuffer + (NUM_SPECTROGRAM_SEGMENTS * rectWidth))) / 2;
-        this.ticker.add(() => {
+        this.animate = () => {
             const media = sound.media;
             const buffer = media.buffer;
             this.currentTime += this.ticker.elapsedMS;
@@ -69,22 +74,24 @@ export default class AudiogramCanvas extends Component {
                 // get time frame from here to 16.6 ms in future
                 // TODO: get just once later
                 const { spectrogramData, endingIdx } = getSpectrogramData(buffer, data, this.startingIdx, this.ticker.elapsedMS, height);
-                graphics.clear();
+                this.graphics.clear();
                 spectrogramData.map((spectrogramBlock, idx) => {
                     let x = startingX + Math.floor(idx * rectWidth)  + (xBuffer * idx) + spectroGramXPadding;
                     
                     // limit it to height
                     const h = Math.min(spectrogramBlock * audioMultiplier, height);
+                    console.log('y', startingY);
                     
                     let y = startingY + Math.floor((height - h) / 2);
 
-                    graphics.beginFill(0xFFFFFF);
-                    graphics.drawRect(x, y, rectWidth, h);
-                    graphics.endFill();
+                    this.graphics.beginFill(0xFFFFFF);
+                    this.graphics.drawRect(x, y, rectWidth, h);
+                    this.graphics.endFill();
                 });
                 this.startingIdx = endingIdx;
             }
-        });
+        }
+        this.ticker.add(this.animate);
         this.ticker.start();
     }
 
@@ -95,7 +102,13 @@ export default class AudiogramCanvas extends Component {
 
     componentDidUpdate(props) {
         if (this.props.pixiApp && !props.pixiApp) {
-            console.log('start animation');
+            this.startAnimation();
+        }
+        if (this.props.aspectRatio !== props.aspectRatio) {
+            // changed aspect ratio
+            console.log('aspect ratio');
+            this.ticker.remove(this.animate);
+            // this.ticker.destroy();
             this.startAnimation();
         }
         if (props.pauseAt !== this.props.pauseAt) {

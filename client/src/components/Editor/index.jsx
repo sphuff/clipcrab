@@ -220,7 +220,7 @@ export default class Editor extends Component {
               <Background stage={app && app.stage} width={width} height={height} hexColor={hexColor} backgroundImage={backgroundImage}/>
               <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
               <TextBlock pixiApp={app} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
-              <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
+              <AudiogramCanvas pixiApp={app} fps={fps} aspectRatio={aspectRatio} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
               {/* <Audiogram /> */}
           </div>
       );
