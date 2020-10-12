@@ -4,8 +4,8 @@ import { Tooltip, Overlay } from 'react-bootstrap';
 import './index.scss';
 import WordBlock from './WordBlock';
 
-const NO_CHILDREN_TOOLTIP_MESSAGE = 'Click on a single word to create an animation block with its neighbors on the left. Or, drag it towards the right.';
-const CHILDREN_TOOLTIP_MESSAGE = 'Click on an already existing animation block to break it up. Or, drag it to grow';
+const NO_CHILDREN_TOOLTIP_MESSAGE = 'Click on a single word to create an animation block with its neighbors on the left. Or, drag it towards the right. You can also edit the text by right clicking.';
+const CHILDREN_TOOLTIP_MESSAGE = 'Click on an already existing animation block to break it up. Or, drag it to grow. You can also edit the text by right clicking.';
 
 export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wordBlock: WordBlock, updateTextBlocks: Function}) {
     const [isEditing, setIsEditing] = useState(false);
@@ -154,9 +154,11 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
                 {text}
             </span>
             <Overlay target={ref.current} show={showTooltip} placement='top'>
-                <Tooltip id={`tooltip-wordblock-${wordBlock.id}`} className='bg-black px-4 py-2 rounded text-white text-xs'>
-                    <div></div>
-                    { tooltipText }
+                <Tooltip id={`tooltip-wordblock-${wordBlock.id}`}>
+                    <div className='flex justify-center relative bg-black px-4 py-2 rounded text-white text-xs'>
+                        { tooltipText }
+                        <div className='bg-black absolute m-auto min-h-8 min-w-8 rotate-45 bottom-0 transform translate-y-1/2'></div>
+                    </div>
                 </Tooltip>
             </Overlay>
         </>
