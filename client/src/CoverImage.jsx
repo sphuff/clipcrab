@@ -30,7 +30,7 @@ export default function CoverImage({icon, pixiApp, ...props}) {
             }
         }
         iconSprite.anchor.set(0.5, 0);
-        iconSprite.zIndex = 1;
+        iconSprite.zIndex = 2;
         pixiApp.stage.addChild(iconSprite);
     }, [icon, pixiApp]);
     return null;

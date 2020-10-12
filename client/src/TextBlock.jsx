@@ -141,7 +141,7 @@ export default class TextBlock extends Component {
         });
 
         basicText.x = getXPos(startingX, alignX, pixiApp);
-        basicText.zIndex = 1;
+        basicText.zIndex = 3;
 
         if (y) {
             basicText.y = y;

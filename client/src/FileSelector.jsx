@@ -1,25 +1,24 @@
-import React, { Component } from 'react';
+import React, { useRef } from 'react';
 
-export default class FileSelector extends Component {
-    constructor(props) {
-        super(props);
-        this.fileInput = React.createRef();
-    }
-    
-    fileSelected(e) {
-        const { onFileSelect } = this.props;
-        const file = this.fileInput.current.files[0];
+export default function FileSelector({ cta, onFileSelect }) {
+    const fileRef = useRef(null);
+
+    const fileSelected = (e) => {
+        const file = fileRef.current.files[0];
+        console.log(fileRef);
+        console.log(onFileSelect);
         onFileSelect(e, file);
+        // clear files in case they want to reselect
+        fileRef.current.value = '';
     }
 
-    render() {
-        const { cta } = this.props;
-        return (
-            <form>
-                <h4 className='font-semibold text-base py-4'>{cta}</h4>
-                <label for="upload-file" className='cursor-pointer rounded text-sm bg-gray-400 px-4 py-2'><i className='fas fa-upload'></i> Upload File</label>
-                <input id='upload-file' type="file" className='invisible' ref={this.fileInput} onChange={this.fileSelected.bind(this)}/>
-            </form>
-        );
-    }
+    const id = `upload-file-${cta.replace(/ /g, '-')}`;
+
+    return (
+        <form>
+            <h4 className='font-semibold text-base py-4'>{cta}</h4>
+            <label htmlFor={id} className='cursor-pointer rounded text-sm bg-gray-400 px-4 py-2'><i className='fas fa-upload'></i> Upload File</label>
+            <input id={id} type="file" className='invisible' ref={fileRef} onChange={(e) => fileSelected(e)}/>
+        </form>
+    );
 }

@@ -15,6 +15,7 @@ export default class Editor extends Component {
         this.state = {
             hexColor: 0x1C396F,
             coverImage: null,
+            backgroundImage: null,
             seekTo: 0,
             restartSound: 0,
             app: null,
@@ -57,6 +58,21 @@ export default class Editor extends Component {
         console.log(e.currentTarget);
         this.setState({
           coverImage: URL.createObjectURL(file),
+          backgroundImage: null,
+        });
+    }
+
+    async selectedBackgroundImage(e, file) {
+        console.log('selected background image', e, file);
+        if (!file) return;
+        if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+          alert('Must enter image file');
+          return;
+        }
+        console.log(e.currentTarget);
+        this.setState({
+          backgroundImage: URL.createObjectURL(file),
+          coverImage: null,
         });
     }
 
@@ -76,7 +92,9 @@ export default class Editor extends Component {
 
     onColorSelect(hexColor) {
         this.setState({
-          hexColor
+          hexColor,
+          backgroundImage: null,
+          coverImage: null,
         });
     }
 
@@ -167,7 +185,7 @@ export default class Editor extends Component {
 
     render() {
         const { sound, soundFileURL, loadingText, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
-        const { app, hexColor, textBlocks, coverImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
+        const { app, hexColor, textBlocks, coverImage, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
         const isPlayingAudio = !(!!pauseTime);
 
         return (
@@ -187,11 +205,11 @@ export default class Editor extends Component {
                     <canvas id="myCanvas" className='rounded shadow-lg'></canvas>
                   </div>
                 </div>
-                <EditorTray onRecord={this.recordVideo.bind(this)} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onFileSelect={this.selectedCoverImage.bind(this)}/>
+                <EditorTray onRecord={this.recordVideo.bind(this)} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onCoverImageSelect={this.selectedCoverImage.bind(this)} onBackgroundImageSelect={this.selectedBackgroundImage.bind(this)}/>
                 <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
                 {/* might need to render for sound loaded */}
                 <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)}/>
-                <Background pixiApp={app} hexColor={hexColor}/>
+                <Background pixiApp={app} hexColor={hexColor} backgroundImage={backgroundImage}/>
                 <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
                 <TextBlock pixiApp={app} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
                 <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
