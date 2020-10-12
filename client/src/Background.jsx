@@ -23,13 +23,14 @@ export default function Background ({ stage, width, height, hexColor, background
         stage.addChild(imageSprite);
         imageSprite.x = 0;
         imageSprite.y = 0;
+        imageSprite.anchor.set(0, 0);
 
         const img = new Image();
         img.src = backgroundImage;
         img.onload = function() {
             const aspectRatio = this.height / this.width;
-            imageSprite.width = width;
-            imageSprite.height = width * aspectRatio;
+            imageSprite.width = height / aspectRatio;
+            imageSprite.height = height;
         }
         imageSprite.zIndex = 2;
         setBackgroundImageSprite(imageSprite);
