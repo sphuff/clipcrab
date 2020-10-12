@@ -80,7 +80,6 @@ export default class AudiogramCanvas extends Component {
                     
                     // limit it to height
                     const h = Math.min(spectrogramBlock * audioMultiplier, height);
-                    console.log('y', startingY);
                     
                     let y = startingY + Math.floor((height - h) / 2);
 
