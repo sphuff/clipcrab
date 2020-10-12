@@ -10,7 +10,9 @@ module.exports = class EncodingController {
             const videoFilename = path.basename(videoURL);
             const dir = '/tmp/transcoded';
             if (!fs.existsSync(dir)){
+                console.log('make dir', dir);
                 fs.mkdirSync(dir);
+                console.log('dir exists: ', fs.existsSync(dir));
             }
             const outputLocation = `${dir}/${videoFilename}`;
             console.log(outputLocation);
