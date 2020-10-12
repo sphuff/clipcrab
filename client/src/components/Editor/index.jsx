@@ -23,12 +23,13 @@ export default class Editor extends Component {
             pauseTime: null,
             isRecording: false,
             loadingText: null,
+            aspectRatio: 'square',
             textBlocks: [],
         };
     }
 
     async componentDidMount() {
-        const { config: { layouts : { instagram: { width, height } } } } = this.props;
+        const { config: { layouts : { square: { width, height } } } } = this.props;
         const canvas = document.getElementById('myCanvas');
         // set resolution to avoid font blurring
         // NOTE: everything will need to be scaled by 0.5 to make up for resolution
@@ -74,6 +75,15 @@ export default class Editor extends Component {
           backgroundImage: URL.createObjectURL(file),
           coverImage: null,
         });
+    }
+
+    onSelectAspectRatio(aspectRatio) {
+      const { config: { layouts : { [aspectRatio]: { width, height }}} } = this.props;
+      const { app } = this.state;
+      app.renderer.resize(width, height);
+      this.setState({
+        aspectRatio,
+      });
     }
 
     onUpdateTextBlocks(textBlocks, seekTo) {
@@ -184,37 +194,35 @@ export default class Editor extends Component {
     }
 
     render() {
-        const { sound, soundFileURL, loadingText, wordBlocks, config: { fps, layouts : { instagram: { audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
-        const { app, hexColor, textBlocks, coverImage, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
-        const isPlayingAudio = !(!!pauseTime);
+      const { app, hexColor, textBlocks, coverImage, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding, aspectRatio } = this.state;
+      const { sound, soundFileURL, loadingText, wordBlocks, config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
+      const isPlayingAudio = !(!!pauseTime);
 
-        return (
-            <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>
-                { finishedEncoding && (
-                  <div>Finished Encoding</div>
-                  )}
-                { isRecording && (
-                  <div className='z-20 absolute top-0 h-screen w-screen bg-gray-500 bg-opacity-75 flex justify-center items-center'>
-                    <div className='p-4 relative rounded bg-white'>
-                      <LoadingIndicator text={loadingText ? loadingText : 'Now recording. Please wait to complete'} />
-                    </div>
-                  </div>
+      return (
+          <div className='editorContainer min-h-full min-w-full w-full flex flex-wrap self-stretch lg:grid lg:grid-cols-editor lg:grid-rows-editor'>
+              { finishedEncoding && (
+                <div>Finished Encoding</div>
                 )}
-                <div className='flex-1 flex justify-center items-center'>
-                  <div className='bg-gray-200 p-8'>
-                    <canvas id="myCanvas" className='rounded shadow-lg'></canvas>
+              { isRecording && (
+                <div className='z-20 absolute top-0 h-screen w-screen bg-gray-500 bg-opacity-75 flex justify-center items-center'>
+                  <div className='p-4 relative rounded bg-white'>
+                    <LoadingIndicator text={loadingText ? loadingText : 'Now recording. Please wait to complete'} />
                   </div>
                 </div>
-                <EditorTray onRecord={this.recordVideo.bind(this)} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onCoverImageSelect={this.selectedCoverImage.bind(this)} onBackgroundImageSelect={this.selectedBackgroundImage.bind(this)}/>
-                <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
-                {/* might need to render for sound loaded */}
-                <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)}/>
-                <Background pixiApp={app} hexColor={hexColor} backgroundImage={backgroundImage}/>
-                <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
-                <TextBlock pixiApp={app} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
-                <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
-                {/* <Audiogram /> */}
-            </div>
-        );
+              )}
+              <div className='flex-1 flex justify-center items-center'>
+                <canvas id="myCanvas" className='m-8 rounded shadow-lg max-h-full'></canvas>
+              </div>
+              <EditorTray onRecord={this.recordVideo.bind(this)} aspectRatio={aspectRatio} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onCoverImageSelect={this.selectedCoverImage.bind(this)} onBackgroundImageSelect={this.selectedBackgroundImage.bind(this)} onSelectAspectRatio={this.onSelectAspectRatio.bind(this)}/>
+              <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
+              {/* might need to render for sound loaded */}
+              <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)}/>
+              <Background stage={app && app.stage} width={width} height={height} hexColor={hexColor} backgroundImage={backgroundImage}/>
+              <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
+              <TextBlock pixiApp={app} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>
+              <AudiogramCanvas pixiApp={app} fps={fps} restartSound={restartSound} seekTo={seekTo} {...audiogramProps} sound={sound} pauseAt={pauseTime}/>
+              {/* <Audiogram /> */}
+          </div>
+      );
     }
 }

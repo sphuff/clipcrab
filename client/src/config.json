@@ -21,8 +21,8 @@
 
         },
         "phone": {
-            "width": 720,
-            "height": 1280,
+            "width": 337.5,
+            "height": 600,
             "audiogram": {
                 "height": 300,
                 "width": 550,
@@ -32,19 +32,20 @@
             "text": {
                 "alignX": "center",
                 "alignY": "center",
-                "width": 500,
+                "width": 285,
+                "fontSize": 16,
+                "lineHeight": 22,
                 "animation": "none"
             },
             "coverImage": {
-                "x": 97,
                 "y": 93,
-                "width": 220,
-                "height": 220,
+                "width": 117,
+                "height": 117,
                 "alignX": "center"
             }
 
         },
-        "instagram": {
+        "square": {
             "width": 417,
             "height": 417,
             "audiogram": {

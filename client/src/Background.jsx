@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
 
-export default function Background ({pixiApp, hexColor, backgroundImage}) {
+export default function Background ({ stage, width, height, hexColor, backgroundImage }) {
     const [backgroundImageSprite, setBackgroundImageSprite] = useState(null);
     
     useEffect(() => {
-        if (!pixiApp || !hexColor) return;
-        const { stage, renderer: { screen: { width, height } } } = pixiApp;
+        if (!stage || !hexColor) return;
         const graphics = new PIXI.Graphics();
         stage.addChild(graphics);
         graphics.beginFill(hexColor);
         graphics.drawRect(0, 0, width, height);
         graphics.endFill();
         graphics.zIndex = 2;
-    }, [pixiApp, hexColor]);
+    }, [stage, width, height, hexColor]);
 
     useEffect(() => {
-        if (!pixiApp || !backgroundImage) return;
-        const { stage, renderer: { screen: { width, height } } } = pixiApp;
+        if (!stage || !backgroundImage) return;
         if (backgroundImageSprite) {
             stage.removeChild(backgroundImageSprite);
         }
@@ -35,7 +33,7 @@ export default function Background ({pixiApp, hexColor, backgroundImage}) {
         }
         imageSprite.zIndex = 2;
         setBackgroundImageSprite(imageSprite);
-    }, [pixiApp, backgroundImage]);
+    }, [stage, backgroundImage]);
 
     return null;
 }
