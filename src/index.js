@@ -64,7 +64,7 @@ server.get('/encoding', async (req, res) => {
   const transcriptionStatus = await AWSService.getTranscodingStatus(fileName);
   if (transcriptionStatus !== STATUS_TRANSCODED) {
     console.log('transcode not ready');
-    return res.status(503).send();
+    return res.status(429).send();
   }
   const s3Location = AWSService.getTranscodedFile(fileName);
   res.json({ finalVideoLocation: s3Location });
@@ -86,7 +86,7 @@ server.get('/transcription', async (req, res) => {
   const transcriptionStatus = await TranscriptionController.getTranscriptionStatus(jobId, isProd);
   if (transcriptionStatus !== STATUS_TRANSCRIBED) {
     console.log('not ready');
-    return res.status(503).send();
+    return res.status(429).send();
   }
   const wordBlocks = await TranscriptionController.getWordBlocks(jobId, isProd);
   res.json({ wordBlocks });

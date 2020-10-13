@@ -53,7 +53,7 @@ export default class App extends Component {
     const fileName = json.fileName;
 
     const axiosInstance = Axios.create();
-    axiosRetry(axiosInstance, { retries: 50, retryDelay: (retryCount) => 2000 });
+    axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }});
 
     console.log(encodingRes);
@@ -84,7 +84,7 @@ export default class App extends Component {
     const res = await Axios.post(makeServerURL('/transcribe'), { audioURL: fileURL });
     const { jobId } = res.data;
     const axiosInstance = Axios.create();
-    axiosRetry(axiosInstance, { retries: 50, retryDelay: (retryCount) => 2000 });
+    axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     const transcriptionRes = await axiosInstance.get(makeServerURL('/transcription'), { params: { jobId } });
     const { wordBlocks } = transcriptionRes.data;
 
