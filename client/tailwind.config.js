@@ -23,6 +23,9 @@ module.exports = {
         '64': '64px',
         'screen': '100vh',
       },
+      maxWidth: {
+        '24rem': '24rem',
+      },
       minWidth: {
         '4': '4px',
         '8': '8px',

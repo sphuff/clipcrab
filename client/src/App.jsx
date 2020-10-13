@@ -24,7 +24,8 @@ export default class App extends Component {
       coverImage: null,
       serverAudioFileURL: null,
       isLoading: false, 
-      loadingText: null, 
+      loadingText: null,
+      loadingSubText: null,
       hasSelectedSound: false, 
       loadedTranscription: false,
       isReadyForVideoEditor: false,
@@ -114,7 +115,8 @@ export default class App extends Component {
     const { s3FileURL } = await this.uploadFile(file);
     this.setState({
       serverAudioFileURL: s3FileURL,
-      loadingText: 'Transcribing text',
+      loadingText: 'Transcribing text. This will take a minute.',
+      loadingSubText: '(For a 30 second mp3, this will usually take around 20 seconds.)',
     });
     await this.loadSound(file);
     await this.requestTranscription(s3FileURL);
@@ -147,7 +149,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { serverAudioFileURL, isLoading, loadingText, loadedTranscription, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
+    const { serverAudioFileURL, isLoading, loadingText, loadingSubText, loadedTranscription, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
     const isReadyForVideoEditor = loadedTranscription && sound;
 
     if (finalVideoLocation) {
@@ -164,11 +166,11 @@ export default class App extends Component {
         </header>
         <div className='appContainer-contentContainer max-w-screen flex-1 flex justify-center items-center'>
           { !hasSelectedSound && (
-            <FileSelector onFileSelect={this.selectedSound.bind(this)} cta={'Input your mp3 file'}/>
+            <FileSelector onFileSelect={this.selectedSound.bind(this)} cta={'Input your mp3 file (1MB limit)'}/>
           )}
 
           { isLoading && (
-            <LoadingIndicator text={loadingText} />
+            <LoadingIndicator text={loadingText} subText={loadingSubText}/>
           )}
           
           { isReadyForVideoEditor && (
