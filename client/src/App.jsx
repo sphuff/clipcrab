@@ -8,6 +8,7 @@ import { NORMAL_ALPHA, } from './constants';
 import Axios from 'axios';
 import FileSelector from './FileSelector';
 import axiosRetry from 'axios-retry';
+import walkthroughTranscription from './walkthrough-transcription.json';
 
 import Editor from './components/Editor';
 import LoadingIndicator from './components/LoadingIndicator';
@@ -53,7 +54,7 @@ export default class App extends Component {
     const fileName = json.fileName;
 
     const axiosInstance = Axios.create();
-    axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
+    axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }});
 
     console.log(encodingRes);
@@ -84,7 +85,7 @@ export default class App extends Component {
     const res = await Axios.post(makeServerURL('/transcribe'), { audioURL: fileURL });
     const { jobId } = res.data;
     const axiosInstance = Axios.create();
-    axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
+    axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     const transcriptionRes = await axiosInstance.get(makeServerURL('/transcription'), { params: { jobId } });
     const { wordBlocks } = transcriptionRes.data;
 
@@ -115,11 +116,15 @@ export default class App extends Component {
     const { s3FileURL } = await this.uploadFile(file);
     this.setState({
       serverAudioFileURL: s3FileURL,
-      loadingText: 'Transcribing text. This will take a minute.',
-      loadingSubText: '(For a 30 second mp3, this will usually take around 20 seconds.)',
     });
     await this.loadSound(file);
-    await this.requestTranscription(s3FileURL);
+    this.loadTestTranscription();
+  }
+
+  loadTestTranscription() {
+    this.setState({
+      wordBlocks: this.initWordBlocks(walkthroughTranscription),
+    });
   }
   
   async loadSound(file) {
@@ -134,6 +139,7 @@ export default class App extends Component {
           sound,
           soundFile: file,
           soundFileURL: soundFileURL,
+          isLoading: false,
         });
       }
     });
@@ -150,7 +156,7 @@ export default class App extends Component {
 
   render() {
     const { serverAudioFileURL, isLoading, loadingText, loadingSubText, loadedTranscription, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
-    const isReadyForVideoEditor = loadedTranscription && sound;
+    const isReadyForVideoEditor = !!sound;
 
     if (finalVideoLocation) {
       return (
@@ -174,7 +180,19 @@ export default class App extends Component {
           )}
           
           { isReadyForVideoEditor && (
-            <Editor sound={sound} soundFile={soundFile} soundFileURL={soundFileURL} wordBlocks={wordBlocks} config={config} uploadFile={this.uploadFile.bind(this)} encodeVideo={this.encodeVideo.bind(this)} serverAudioFileURL={serverAudioFileURL} loadingText={loadingText}/>
+            <Editor
+              sound={sound}
+              soundFile={soundFile}
+              soundFileURL={soundFileURL}
+              wordBlocks={wordBlocks}
+              config={config}
+              uploadFile={this.uploadFile.bind(this)}
+              encodeVideo={this.encodeVideo.bind(this)}
+              serverAudioFileURL={serverAudioFileURL}
+              loadingText={loadingText}
+              loadedTranscription={loadedTranscription}
+              requestTranscription={this.requestTranscription.bind(this)}
+            />
           )}
         </div>
       </div>

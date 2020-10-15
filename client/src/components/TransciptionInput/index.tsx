@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NORMAL_ALPHA, HOVER_ALPHA } from '../../constants';
+import LoadingIndicator from '../LoadingIndicator';
 import './index.scss';
 import WordBlock from './WordBlock';
 import WordBlockComponent from './WordBlockComponent';
@@ -33,8 +34,9 @@ const formSentences = (wordBlocks: Array<RawWordBlock>): Array<WordBlock> => {
     });
 }
 
-function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTextBlocks }: { soundLoaded: boolean, wordBlocks: Array<RawWordBlock>, onUpdateTextBlocks: Function}) {
+function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTextBlocks, requestTranscription, loadedTranscription }: { soundLoaded: boolean, wordBlocks: Array<RawWordBlock>, onUpdateTextBlocks: Function, requestTranscription: Function, loadedTranscription: boolean }) {
     const [wordBlocks, setWordBlocks] = useState<Array<WordBlock>>([]);
+    const [isLoadingTranscription, setIsLoadingTranscription] = useState(false);
 
     useEffect(() => {
         const sentenceBlocks = formSentences(wordBlocksProp);
@@ -62,6 +64,12 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
         onUpdateTextBlocks(textBlocks, seekTo);
     }
 
+    const loadTranscription = (evt: any) => {
+        setIsLoadingTranscription(true);
+        requestTranscription()
+            .then(() => setIsLoadingTranscription(false));
+    }
+
     if (!soundLoaded) return null;
     
     return (
@@ -82,6 +90,17 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
                     );
                 })}
             </div>
+            { !loadedTranscription && !isLoadingTranscription && (
+                <div className='flex items-center flex-col'>
+                    <span>Want your real text transcribed?</span>
+                    <button className='block px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded' onClick={loadTranscription}>Transcribe Text</button>
+                </div>
+            )}
+            {isLoadingTranscription && (
+                <div className='flex justify-center'>
+                    <LoadingIndicator text='Transcribing text. This will take a minute.' subText='(For a 30 second mp3, this will usually take around 20 seconds.)' />
+                </div>
+            )}
         </div>
     )
 }
