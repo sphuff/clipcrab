@@ -37,9 +37,6 @@ export default class App extends Component {
   }
 
   async encodeVideo(serverAudioFileURL, serverVideoFileURL) {
-    this.setState({
-      loadingText: 'Encoding video. Almost there.',
-    });
     const res = await fetch(makeServerURL('/encode'), {
       method: 'POST',
       headers: {
@@ -189,7 +186,6 @@ export default class App extends Component {
               uploadFile={this.uploadFile.bind(this)}
               encodeVideo={this.encodeVideo.bind(this)}
               serverAudioFileURL={serverAudioFileURL}
-              loadingText={loadingText}
               loadedTranscription={loadedTranscription}
               requestTranscription={this.requestTranscription.bind(this)}
             />

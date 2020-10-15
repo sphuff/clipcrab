@@ -121,44 +121,49 @@ export default class Editor extends Component {
         if (!canvasEl) return;
     
         const frameRate = 60;
-        const videoStream = canvasEl.captureStream(frameRate);
-    
+        
         // restart audio and text
-        sound.play();
         this.setState({
           restartSound: restartSound + 1,
           seekTo: 0,
+          loadingText: 'Now recording. Please wait to complete',
           pauseTime: null,
           isRecording: true,
+        }, () => {
+          const videoStream = canvasEl.captureStream(frameRate);
+          sound.play();
+
+          const mediaRecorder = new MediaRecorder(videoStream, options);
+          let chunks = [];
+          mediaRecorder.ondataavailable = e => {
+            chunks.push(e.data); // gets called at end
+            console.log('data avail: ', chunks);
+          };
+          // only when the recorder stops, we construct a complete Blob from all the chunks
+          mediaRecorder.onstop = async e => {
+            const videoBlob = new Blob(chunks, {
+              type: 'video\/webm'
+            });
+            const date = new Date();
+            const videoFile = new File([videoBlob], `${soundFile.name}-${date.toISOString()}.mp4`);
+            const { s3FileURL: serverVideoFileURL } = await uploadFile(videoFile);
+            this.setState({
+              serverVideoFileURL: serverVideoFileURL,
+              loadingText: 'Encoding video. Almost there.',
+            });
+            await encodeVideo(serverAudioFileURL, serverVideoFileURL);
+            this.clearVideoAndAudio();
+          }
+      
+          mediaRecorder.start();
+          const timeout = sound.duration * 1000;
+          this.recorderTimeout = setTimeout(() => {
+              mediaRecorder.stop();
+          }, timeout);
         });
-        
-        const mediaRecorder = new MediaRecorder(videoStream, options);
-        let chunks = [];
-        mediaRecorder.ondataavailable = e => {
-          chunks.push(e.data); // gets called at end
-          console.log('data avail: ', chunks);
-        };
-        // only when the recorder stops, we construct a complete Blob from all the chunks
-        mediaRecorder.onstop = async e => {
-          const videoBlob = new Blob(chunks, {
-            type: 'video\/webm'
-          });
-          const date = new Date();
-          const videoFile = new File([videoBlob], `${soundFile.name}-${date.toISOString()}.mp4`);
-          const { s3FileURL: serverVideoFileURL } = await uploadFile(videoFile);
-          this.setState({
-            serverVideoFileURL: serverVideoFileURL,
-          });
-          await encodeVideo(serverAudioFileURL, serverVideoFileURL);
-          this.clearVideoAndAudio();
-        }
-    
-        mediaRecorder.start();
-        const timeout = sound.duration * 1000;
-        this.recorderTimeout = setTimeout(() => {
-            mediaRecorder.stop();
-        }, timeout);
     }
+
+
 
     playAudio() {
       if (this.state.pauseTime) {
@@ -199,8 +204,8 @@ export default class Editor extends Component {
     }
 
     render() {
-      const { app, hexColor, textBlocks, coverImage, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding, aspectRatio } = this.state;
-      const { sound, soundFileURL, loadingText, wordBlocks, loadedTranscription, config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
+      const { app, hexColor, textBlocks, coverImage, loadingText, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding, aspectRatio } = this.state;
+      const { sound, soundFileURL, wordBlocks, loadedTranscription, config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
       const isPlayingAudio = !(!!pauseTime);
 
       return (
@@ -211,7 +216,7 @@ export default class Editor extends Component {
               { isRecording && (
                 <div className='z-20 absolute top-0 h-screen w-screen bg-gray-500 bg-opacity-75 flex justify-center items-center'>
                   <div className='p-4 relative rounded bg-white'>
-                    <LoadingIndicator text={loadingText ? loadingText : 'Now recording. Please wait to complete'} />
+                    <LoadingIndicator text={loadingText} />
                   </div>
                 </div>
               )}
