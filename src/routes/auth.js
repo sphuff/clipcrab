@@ -11,8 +11,14 @@ router.get('/login', passport.authenticate('auth0', {
 
 router.get('/callback', function (req, res, next) {
     passport.authenticate('auth0', function (err, user, info) {
-      if (err) { return next(err); }
-      if (!user) { return res.redirect('/login'); }
+      if (err) { 
+        console.log('passport auth err: ', err);
+        return next(err);
+      }
+      if (!user) { 
+        console.log('passport no user');
+        return res.redirect('/login');
+      }
       req.logIn(user, function (err) {
         if (err) { return next(err); }
         console.log('log in success');
