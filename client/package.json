@@ -25,9 +25,9 @@
     "tailwindcss": "^1.8.10"
   },
   "scripts": {
-    "start": "react-app-rewired --max-old-space-size=8192 start",
-    "build": "react-app-rewired --max-old-space-size=8192 build",
-    "test": "react-app-rewired --max-old-space-size=8192 test",
+    "start": "react-app-rewired start",
+    "build": "node_modules/react-app-rewired/bin/index.js build",
+    "test": "react-app-rewired test",
     "node-test": "mocha tests",
     "eject": "react-scripts eject"
   },
