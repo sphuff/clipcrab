@@ -1,8 +1,13 @@
 version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
-workflows:
+jobs:
   build:
+    docker:
+      - image: cypress/base:10
+        environment:
+          ## this enables colors in the output
+          TERM: xterm
     steps:
       - checkout
       - run:
