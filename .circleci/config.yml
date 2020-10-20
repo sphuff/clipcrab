@@ -3,10 +3,18 @@ orbs:
   cypress: cypress-io/cypress@1
 workflows:
   build:
-    jobs:
-      - cypress/install:
-          build: npm run heroku-postbuild
-      - cypress/run:
-          yarn: true
-          start: npm start
-          wait-on: 'http://localhost:3001'
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Build Client
+          command: npm run heroku-postbuild
+      - run:
+          name: Start Server
+          command: npm start
+          background: true
+      - run:
+          name: Run Tests
+          command: npm run cypress:test
