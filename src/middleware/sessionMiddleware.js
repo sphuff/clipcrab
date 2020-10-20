@@ -2,7 +2,7 @@ const session = require('express-session');
 
 module.exports = function(server) {
     const sess = {
-        secret: 'CHANGE THIS TO A RANDOM SECRET',
+        secret: process.env.SESSION_SECRET,
         cookie: {},
         resave: false,
         saveUninitialized: true

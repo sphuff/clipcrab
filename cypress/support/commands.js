@@ -1,4 +1,3 @@
-const auth0 = require('auth0-js');
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -28,7 +27,7 @@ const auth0 = require('auth0-js');
 Cypress.Commands.add('login', (overrides = {}) => {
     Cypress.log({
       name: 'loginViaAuth0',
-      message: Cypress.env('auth_username') +':' + Cypress.env('auth_password'),
+      message: Cypress.env('auth_url') +':' + Cypress.env('auth_audience'),
     });
   
     const options = {
@@ -46,3 +45,42 @@ Cypress.Commands.add('login', (overrides = {}) => {
     };
     cy.request(options);
 });
+
+Cypress.Commands.add('lazyLogin', (overrides = {}) => {
+  Cypress.log({
+    name: 'lazyLogin',
+    message: Cypress.env('auth_url') +':' + Cypress.env('auth_audience'),
+  });
+  
+  cy.get('input[type="email"]')
+    .type(Cypress.env('auth_username'));
+  cy.get('input[type="password"]')
+    .type(Cypress.env('auth_password'));
+
+  cy.setCookie('hasAuthenticated', 'true');
+  cy.get('form')
+    .submit();
+});
+
+Cypress.Commands.add('logInTestUser', (overrides = {}) => {
+  Cypress.log({
+    name: 'logInTestUser',
+    message: Cypress.env('auth_url') +':' + Cypress.env('auth_audience'),
+  });
+
+  const getUserProfile = () => {
+    return cy.request('http://localhost:3001/user')
+      .its('body.userProfile')
+  }
+  
+  let userProfile = getUserProfile();
+  return userProfile
+        .then(value => {
+          if (!value) {
+            cy.lazyLogin();
+            userProfile = getUserProfile();
+          }
+          return value;
+        });
+});
+
