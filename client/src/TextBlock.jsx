@@ -1,13 +1,13 @@
-import React, {Component, useState, useEffect} from 'react';
+import {Component} from 'react';
 import * as PIXI from 'pixi.js';
-import { ease, Ease } from 'pixi-ease'
+import { Ease } from 'pixi-ease'
 import { getXPos, getYPos } from './utils';
 
 export default class TextBlock extends Component {
 
     animateTextBlocks(textBlocks, seekTo = 0) {
-        const { pixiApp, alignX, alignY, fontSize, lineHeight, pauseAt, animation, x: startingX, y: startingY, width, fps } = this.props;
-        const { stage, renderer } = pixiApp;
+        const { pixiApp, alignY, animation, y: startingY, fps } = this.props;
+        const { renderer } = pixiApp;
 
         const containerHeight = renderer.screen.height;
         this.textAnimations = [];
@@ -24,7 +24,7 @@ export default class TextBlock extends Component {
         });
         let ticker = new PIXI.Ticker();
 
-        {textBlocks.map((textBlock, idx) => {
+        textBlocks.map((textBlock, idx) => {
             const {
                 text,
                 startTime,
@@ -38,12 +38,12 @@ export default class TextBlock extends Component {
             const startTimeWithSeek = startTime - seekTo;
             const endTimeWithSeek = endTime - seekTo;
             if (animation === 'fadeInOut') {
-                this.animateTextFadeInOut(ticker, startTimeWithSeek, endTimeWithSeek, destY, textEl, fps, containerHeight, idx);
+                return this.animateTextFadeInOut(ticker, startTimeWithSeek, endTimeWithSeek, destY, textEl, fps, containerHeight, idx);
             } else {
-                this.animateText(startTimeWithSeek, endTimeWithSeek, textEl, destY);
+                return this.animateText(startTimeWithSeek, endTimeWithSeek, textEl, destY);
             }
 
-        })}
+        })
 
         ticker.start();
     }
@@ -110,7 +110,7 @@ export default class TextBlock extends Component {
             textBlocksToAnimate = textBlocks.filter(block => block.endTime >= seekTo);
         }
         this.textAnimations && this.textAnimations.map(textEl => {
-            stage.removeChild(textEl);
+            return stage.removeChild(textEl);
         });
         if (pauseAt !== null) {
             // start < pause < end
@@ -128,7 +128,7 @@ export default class TextBlock extends Component {
     }
 
     drawText(text, y = null, isVisible = false) {
-        const { pixiApp, alignX, alignY, fontSize, lineHeight, pauseAt, x: startingX, y: startingY, width } = this.props;
+        const { pixiApp, alignX, fontSize, lineHeight, x: startingX, width } = this.props;
         const { stage } = pixiApp;
         const basicText = new PIXI.Text(text, {
             fontFamily: 'Nunito',

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { NORMAL_ALPHA, HOVER_ALPHA } from '../../constants';
 import LoadingIndicator from '../LoadingIndicator';
 import './index.scss';
 import WordBlock from './WordBlock';
@@ -42,9 +41,10 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
         const sentenceBlocks = formSentences(wordBlocksProp);
         setWordBlocks(sentenceBlocks);
     }, [wordBlocksProp]);
-    
+
     useEffect(() => {
         updateTextBlocks();
+    // eslint-disable-next-line
     }, [wordBlocks]);
 
     const updateTextBlocks = (wordBlock?: WordBlock) => {
