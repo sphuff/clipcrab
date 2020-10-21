@@ -76,6 +76,7 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
   let userProfile = getUserProfile();
   return userProfile
         .then(value => {
+          console.log('value', value);
           if (!value) {
             cy.lazyLogin();
             userProfile = getUserProfile();
