@@ -16,6 +16,8 @@ jobs:
       - run:
           name: Build Client
           command: npm run heroku-postbuild
+          env:
+            CI: false
       - run:
           name: Start Server
           command: npm start
