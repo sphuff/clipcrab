@@ -72,7 +72,7 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
   return cy.document()
     .then(doc => {
       if (doc.querySelector('input[type="email"]') !== null) {
-        cy.lazyLogin();
+        return cy.lazyLogin();
       }
     });
 });

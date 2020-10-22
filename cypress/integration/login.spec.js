@@ -1,7 +1,7 @@
 describe('login', () => {
     it('should successfully log into our app', () => {
       cy.logInTestUser()
-        .then(() => cy.visit('http://localhost:3001/'))
+        .then(() => cy.wait(500))
         .then(() => cy.request('http://localhost:3001/user'))
         .then(request => {
           const { body } = request;
