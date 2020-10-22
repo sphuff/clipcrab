@@ -69,7 +69,7 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
   });
 
   cy.visit('http://localhost:3001/');
-  cy.document()
+  return cy.document()
     .then(doc => {
       if (doc.querySelector('input[type="email"]') !== null) {
         cy.lazyLogin();
