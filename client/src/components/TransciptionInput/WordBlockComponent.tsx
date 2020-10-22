@@ -24,7 +24,8 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
     useEffect(() => {
         if (ref.current) ref.current.innerText = text;
         if (editRef.current) editRef.current.value = text;
-    }, [text, editRef]);
+    // eslint-disable-next-line
+    }, [text]);
 
     const onHoverOver = (evt: any, wordBlock: WordBlock) => {
         if (!wordBlock.ref) return;
