@@ -142,7 +142,7 @@ export default class Editor extends Component {
           // only when the recorder stops, we construct a complete Blob from all the chunks
           mediaRecorder.onstop = async e => {
             const videoBlob = new Blob(chunks, {
-              type: 'video\/webm'
+              type: 'video/webm'
             });
             const date = new Date();
             const videoFile = new File([videoBlob], `${soundFile.name}-${date.toISOString()}.mp4`);

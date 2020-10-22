@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
 
 export default function Background ({ stage, width, height, hexColor, backgroundImage }) {
@@ -34,7 +34,7 @@ export default function Background ({ stage, width, height, hexColor, background
         }
         imageSprite.zIndex = 2;
         setBackgroundImageSprite(imageSprite);
-    }, [stage, backgroundImage]);
+    }, [stage, backgroundImage, backgroundImageSprite, height]);
 
     return null;
 }

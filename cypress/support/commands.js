@@ -58,7 +58,7 @@ Cypress.Commands.add('lazyLogin', (overrides = {}) => {
     .type(Cypress.env('auth_password'));
 
   cy.setCookie('hasAuthenticated', 'true');
-  cy.get('form')
+  return cy.get('form')
     .submit();
 });
 
@@ -68,19 +68,13 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
     message: Cypress.env('auth_url') +':' + Cypress.env('auth_audience'),
   });
 
-  const getUserProfile = () => {
-    return cy.request('http://localhost:3001/user')
-      .its('body.userProfile')
-  }
-  
-  let userProfile = getUserProfile();
-  return userProfile
-        .then(value => {
-          if (!value) {
-            cy.lazyLogin();
-            userProfile = getUserProfile();
-          }
-          return value;
-        });
+  return cy.visit('http://localhost:3001/')
+    .then(() => cy.wait(1000))
+    .then(() => cy.document())
+    .then(doc => {
+      if (doc.querySelector('input[type="email"]') !== null) {
+        return cy.lazyLogin();
+      }
+    });
 });
 

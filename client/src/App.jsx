@@ -165,7 +165,7 @@ export default class App extends Component {
     return (
       <div className="appContainer overflow-x-hidden lg:max-h-screen min-h-screen min-w-screen bg-gray-200">
         <header className='bg-gray-400 min-w-screen flex'>
-          <img src={logo} className='h-42 w-100'/>
+          <img src={logo} className='h-42 w-100' alt="clipcrab-logo"/>
         </header>
         <div className='appContainer-contentContainer max-w-screen flex-1 flex justify-center items-center'>
           { !hasSelectedSound && (

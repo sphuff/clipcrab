@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, pauseAudio, duration, onSeek }) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -37,6 +37,7 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
             window.WaveSurfer && initTimeline();
         }
         createVisual(soundFileURL);
+        // eslint-disable-next-line
     }, [soundFileURL]);
 
     useEffect(() => {

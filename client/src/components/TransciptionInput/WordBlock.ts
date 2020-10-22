@@ -67,10 +67,10 @@ export default class WordBlock {
         childBlock.isActive = true;
         childBlock.parentWord = undefined;
         let parentText = this.getText();
-        const padding = 10;
         childBlock.ref.current.style.display = 'inline-block';
+        // const padding = 10;
         // no idea why x3, but it works
-        const newWidth = this.ref.current.clientWidth - childBlock.ref.current.clientWidth - (3*padding);
+        // const newWidth = this.ref.current.clientWidth - childBlock.ref.current.clientWidth - (3*padding);
         // this.ref.current.style.minWidth = `${newWidth}px`;
         this.ref.current.innerText = parentText;
     }
@@ -89,9 +89,9 @@ export default class WordBlock {
             });
             childBlock.children = [];
         }
-        const padding = 10;
         childBlock.xPos = childBlock.ref.current.offsetLeft;
-        const newWidth = this.ref.current.clientWidth + childBlock.ref.current.clientWidth + padding;
+        // const padding = 10;
+        // const newWidth = this.ref.current.clientWidth + childBlock.ref.current.clientWidth + padding;
         // this.ref.current.style.minWidth = `${newWidth}px`;
         childBlock.ref.current.style.display = 'none';
         const text = this.getText();
@@ -104,7 +104,7 @@ export default class WordBlock {
         this.prev!.next = this.next;
         if (this.children.length > 0) {
             this.children.map(child => {
-                this.removeChild(child);
+                return this.removeChild(child);
             });
             this.children = [];
         }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import * as PIXI from 'pixi.js';
 import { getXPos } from './utils';
 
@@ -8,7 +8,7 @@ export default function CoverImage({icon, pixiApp, ...props}) {
         if (!pixiApp) {
             return;
         }
-        const { x, y, width, height, alignX } = props;
+        const { x, y, width, alignX } = props;
 
         if (!icon) return;
 
@@ -32,6 +32,6 @@ export default function CoverImage({icon, pixiApp, ...props}) {
         iconSprite.anchor.set(0.5, 0);
         iconSprite.zIndex = 2;
         pixiApp.stage.addChild(iconSprite);
-    }, [icon, pixiApp]);
+    }, [icon, pixiApp, props]);
     return null;
 }

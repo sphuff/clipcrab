@@ -29,7 +29,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "dev:prod": "NODE_ENV=production nodemon src/index.js",
-    "heroku-postbuild": "cd client && mkdir build && npm install --only=dev && npm install && npm run build",
+    "heroku-postbuild": "cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
     "cypress:open": "cypress open",
     "cypress:test": "cypress run --record --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
     "test": "mocha tests/**/*.js"

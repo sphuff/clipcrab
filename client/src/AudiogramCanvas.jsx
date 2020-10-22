@@ -1,14 +1,9 @@
-import React, { useEffect, Component } from 'react';
+import { Component } from 'react';
 import * as PIXI from 'pixi.js';
 import { getXPos } from './utils';
 
 const NUM_SPECTROGRAM_SEGMENTS = 18;
 const SAMPLES_PER_SEC = 48000;
-
-// not me 
-function map_range(value, low1, high1, low2, high2) {
-    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-}
 
 const getSpectrogramData = (buffer, data, startingIdx, elapsedMs, height) => {
     let segments = new Array(NUM_SPECTROGRAM_SEGMENTS);
@@ -86,6 +81,7 @@ export default class AudiogramCanvas extends Component {
                     this.graphics.beginFill(0xFFFFFF);
                     this.graphics.drawRect(x, y, rectWidth, h);
                     this.graphics.endFill();
+                    return h;
                 });
                 this.startingIdx = endingIdx;
             }

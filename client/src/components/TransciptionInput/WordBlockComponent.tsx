@@ -15,15 +15,16 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
     wordBlock.ref = ref;
     const [text, setText] = useState(wordBlock.word);
     const [showTooltip, setShowTooltip] = useState(false);
-    const [tooltipText, setTooltipText] = useState(getTooltipText(wordBlock));
+    const [tooltipText] = useState(getTooltipText(wordBlock));
 
     useEffect(() => {
         setText(wordBlock.getText());
-    }, []);
+    }, [wordBlock]);
 
     useEffect(() => {
         if (ref.current) ref.current.innerText = text;
         if (editRef.current) editRef.current.value = text;
+    // eslint-disable-next-line
     }, [text]);
 
     const onHoverOver = (evt: any, wordBlock: WordBlock) => {
@@ -39,16 +40,16 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
         setShowTooltip(false);
     }
 
-    const changeCursor = (evt: any) => {
-        const xPos = evt.pageX - evt.target.offsetLeft;
-        if (xPos < evt.target.offsetWidth / 2) {
-            // is on left side
-            evt.target.style.cursor = 'w-resize';
-        } else {
-            // is on right side
-            evt.target.style.cursor = 'e-resize';
-        }
-    }
+    // const changeCursor = (evt: any) => {
+    //     const xPos = evt.pageX - evt.target.offsetLeft;
+    //     if (xPos < evt.target.offsetWidth / 2) {
+    //         // is on left side
+    //         evt.target.style.cursor = 'w-resize';
+    //     } else {
+    //         // is on right side
+    //         evt.target.style.cursor = 'e-resize';
+    //     }
+    // }
 
     const onDrag = (evt: React.DragEvent<HTMLSpanElement>, wordBlock: WordBlock) => {
         // if dragging left, shrink current and set
