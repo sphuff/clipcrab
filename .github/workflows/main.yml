@@ -20,3 +20,9 @@ jobs:
           AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          cypress_auth_username: ${{ secrets.cypress_auth_username }}
+          cypress_auth_password: ${{ secrets.cypress_auth_password }}
+          cypress_auth_url: ${{ secrets.cypress_auth_url }}
+          cypress_auth_audience: ${{ secrets.cypress_auth_audience }}
+          cypress_auth_client_id: ${{ secrets.cypress_auth_client_id }}
+          cypress_auth_client_secret: ${{ secrets.cypress_auth_client_secret }}
