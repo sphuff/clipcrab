@@ -83,12 +83,10 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
           let newProf = profile;
           if (!newProf) {
             cy.lazyLogin();
-            getUserProfile()
-              .then(prof => {
-                newProf = prof;
-              });
+            return getUserProfile();
+          } else {
+            return newProf;
           }
-          return newProf;
         });
 });
 
