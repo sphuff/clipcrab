@@ -70,18 +70,25 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
 
   const getUserProfile = () => {
     return cy.request('http://localhost:3001/user')
+      .then(request => {
+        const { body } = request;
+        let profile = body ? body.userProfile : null;
+        return profile;
+      })
   }
   
-  let userProfile = getUserProfile();
-  return userProfile
-        .then(request => {
-          const { body } = request;
-          let profile = body ? body.userProfile : null;
-          if (!profile) {
+  let userProfileProm = getUserProfile();
+  return userProfileProm
+        .then(profile => {
+          let newProf = profile;
+          if (!newProf) {
             cy.lazyLogin();
-            profile = getUserProfile();
+            getUserProfile()
+              .then(prof => {
+                newProf = prof;
+              });
           }
-          return profile;
+          return newProf;
         });
 });
 
