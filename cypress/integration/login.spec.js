@@ -1,7 +1,7 @@
 describe('login', () => {
     it('should successfully log into our app', () => {
+      cy.logInTestUser()
       cy.visit('http://localhost:3001/');
-      cy.lazyLogin()
       cy.request('http://localhost:3001/user')
         .then(request => {
           const { body } = request;

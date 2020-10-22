@@ -68,25 +68,12 @@ Cypress.Commands.add('logInTestUser', (overrides = {}) => {
     message: Cypress.env('auth_url') +':' + Cypress.env('auth_audience'),
   });
 
-  const getUserProfile = () => {
-    return cy.request('http://localhost:3001/user')
-      .then(request => {
-        const { body } = request;
-        let profile = body ? body.userProfile : null;
-        return profile;
-      })
-  }
-  
-  let userProfileProm = getUserProfile();
-  return userProfileProm
-        .then(profile => {
-          if (!profile) {
-            console.log('no profile, lazy login');
-            cy.lazyLogin();
-            return getUserProfile();
-          } else {
-            return profile;
-          }
-        });
+  cy.visit('http://localhost:3001/');
+  cy.document()
+    .then(doc => {
+      if (doc.querySelector('input[type="email"]') !== null) {
+        cy.lazyLogin();
+      }
+    });
 });
 
