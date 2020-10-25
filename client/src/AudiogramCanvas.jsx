@@ -96,6 +96,9 @@ export default class AudiogramCanvas extends Component {
     }
 
     componentDidUpdate(props) {
+        if (!this.props.pixiApp || !this.props.pixiApp.stage) {
+            return;
+        }
         if (this.props.pixiApp && !props.pixiApp) {
             this.startAnimation();
         }

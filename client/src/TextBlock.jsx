@@ -101,16 +101,16 @@ export default class TextBlock extends Component {
     }
 
     componentDidUpdate(props) {
-        const { pauseAt, alignY, y: startingY, textBlocks, seekTo, pixiApp, pixiApp: { stage }} = this.props;
+        const { pauseAt, alignY, y: startingY, textBlocks, seekTo, pixiApp } = this.props;
         console.log('text block animate');
-        if (!stage) return;
+        if (!pixiApp || !pixiApp.stage) return;
         let textBlocksToAnimate = textBlocks;
         if (props.seekTo !== seekTo) {
             // only get text blocks past seekTo
             textBlocksToAnimate = textBlocks.filter(block => block.endTime >= seekTo);
         }
         this.textAnimations && this.textAnimations.map(textEl => {
-            return stage.removeChild(textEl);
+            return pixiApp.stage.removeChild(textEl);
         });
         if (pauseAt !== null) {
             // start < pause < end
