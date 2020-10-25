@@ -15,7 +15,7 @@ jobs:
           command: yarn install --frozen-lockfile
       - run:
           name: Build Client
-          command: yarn build:dev
+          command: yarn build:ci
           env:
             CI: ""
       - run:
