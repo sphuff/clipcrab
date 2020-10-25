@@ -15,13 +15,13 @@ jobs:
           command: yarn install --frozen-lockfile
       - run:
           name: Build Client
-          command: npm run heroku-postbuild
+          command: yarn build:dev
           env:
             CI: ""
       - run:
           name: Start Server
-          command: npm start
+          command: yarn start
           background: true
       - run:
           name: Run Tests
-          command: npm run cypress:test
+          command: yarn cypress:test

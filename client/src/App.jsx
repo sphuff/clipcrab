@@ -158,7 +158,7 @@ export default class App extends Component {
     if (finalVideoLocation) {
       return (
         <div className="appContainer">
-          Congrats, you can download your video by clicking <a href={finalVideoLocation} className='text-blue-400' download>here</a>
+          Congrats, you can download your video by clicking <a href={finalVideoLocation} className='encoding-link text-blue-400' download>here</a>
         </div>
       );
     }
@@ -169,7 +169,7 @@ export default class App extends Component {
         </header>
         <div className='appContainer-contentContainer max-w-screen flex-1 flex justify-center items-center'>
           { !hasSelectedSound && (
-            <FileSelector onFileSelect={this.selectedSound.bind(this)} cta={'Input your mp3 file (1MB limit)'}/>
+            <FileSelector onFileSelect={this.selectedSound.bind(this)} cta={'Input your mp3 file (1MB limit)'} inputId='audio-input'/>
           )}
 
           { isLoading && (

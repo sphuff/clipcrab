@@ -61,6 +61,10 @@ server.post('/encode', async (req, res) => {
 
 server.get('/encoding', async (req, res) => {
   const { fileName } = req.query;
+  if (process.env.NODE_ENV !== 'production') {
+    res.json({ finalVideoLocation: 'https://podcast-clipper.s3.amazonaws.com/mmbam-wizardmp3-2020-09-30T203501300Z-1.mp4' });
+    return;
+  }
   const transcriptionStatus = await AWSService.getTranscodingStatus(fileName);
   if (transcriptionStatus !== STATUS_TRANSCODED) {
     console.log('transcode not ready');
@@ -98,6 +102,7 @@ server.post('/upload', (req, res, next) => {
     const name = uploadFile.name;
     const saveAs = `${name}`;
     const fileLocation = `/tmp/${saveAs}`;
+    console.log('upload: ', name);
 
     uploadFile.mv(fileLocation, async function(err) {
       if (err) {

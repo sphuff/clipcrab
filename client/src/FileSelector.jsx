@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-export default function FileSelector({ cta, onFileSelect }) {
+export default function FileSelector({ cta, onFileSelect, inputId }) {
     const fileRef = useRef(null);
 
     const fileSelected = (e) => {
@@ -12,7 +12,7 @@ export default function FileSelector({ cta, onFileSelect }) {
         fileRef.current.value = '';
     }
 
-    const id = `upload-file-${cta.replace(/ /g, '-')}`;
+    const id = inputId || `upload-file-${cta.replace(/ /g, '-')}`;
 
     return (
         <form>

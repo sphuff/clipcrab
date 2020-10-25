@@ -1,4 +1,6 @@
 {
   "projectId": "ymfhzf",
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "viewportWidth": 1440,
+  "viewportHeight": 900
 }
