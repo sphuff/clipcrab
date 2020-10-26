@@ -9,11 +9,12 @@ jobs:
           ## this enables colors in the output
           TERM: xterm
       - image: circleci/postgres:12-alpine
-        # auth:
-        #   username: mydockerhub-user
-        #   password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+        auth:
+          username: root
+          password: $POSTGRES_PASSWORD  # context / project UI env-var reference
         environment:
           POSTGRES_USER: root
+          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
           POSTGRES_DB: clipcrab
     steps:
       - checkout
