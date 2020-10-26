@@ -27,9 +27,7 @@ createConnection({
   type: 'postgres',
   entities: [path.join(__dirname, './entity/**/*.ts')],
   synchronize: true,
-  extra: {
-    ssl: process.env.NODE_ENV === 'production' ? true : false,
-  },
+  ssl: process.env.NODE_ENV === 'production' ? true : false,
 }).then(() => {
   server.use(bodyParser.json());
   server.use(cors());
