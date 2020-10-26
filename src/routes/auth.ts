@@ -1,5 +1,8 @@
-const express = require('express');
-const passport = require('passport');
+import * as express from 'express';
+import * as passport from 'passport';
+import DBService from '../services/DBService';
+import * as querystring from 'querystring';
+import * as url from 'url';
 
 const router = express.Router();
 
@@ -19,9 +22,15 @@ router.get('/callback', function (req, res, next) {
         console.log('passport no user');
         return res.redirect('/login');
       }
-      req.logIn(user, function (err) {
+      req.logIn(user, async function (err) {
         if (err) { return next(err); }
-        console.log('log in success');
+        console.log('log in success', user.id);
+        let userEntity = await DBService.getUserByAuth0Id(user.id);
+        if (!userEntity) {
+          console.log('creating new user: ', user.id);
+          userEntity = await DBService.createNewUser(user.id);
+          console.log('created new user: ', userEntity);
+        }
         const returnTo = req.session.returnTo;
         delete req.session.returnTo;
         res.redirect(returnTo || '/');
@@ -38,7 +47,7 @@ router.get('/logout', (req, res) => {
       returnTo += ':' + port;
     }
     var logoutURL = new url.URL(
-      util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
+      `https://${process.env.AUTH0_DOMAIN}/v2/logout`
     );
     var searchString = querystring.stringify({
       client_id: process.env.AUTH0_CLIENT_ID,
