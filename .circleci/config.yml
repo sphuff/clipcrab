@@ -8,6 +8,13 @@ jobs:
         environment:
           ## this enables colors in the output
           TERM: xterm
+      - image: circleci/postgres:9.6.2-alpine
+        # auth:
+        #   username: mydockerhub-user
+        #   password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: clipcrab
     steps:
       - checkout
       - run:
@@ -18,6 +25,9 @@ jobs:
           command: yarn build:ci
           env:
             CI: ""
+      - run:
+          name: Build Database
+          command: ts-node ./node_modules/typeorm/cli.js migration:run
       - run:
           name: Start Server
           command: yarn start
