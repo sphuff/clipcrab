@@ -21,13 +21,13 @@ const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
+const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
 
 createConnection({
-  url: process.env.DATABASE_URL,
+  url: dbUrl,
   type: 'postgres',
   entities: [path.join(__dirname, './entity/**/*.ts')],
   synchronize: true,
-  ssl: process.env.NODE_ENV === 'production' ? true : false,
 }).then(() => {
   server.use(bodyParser.json());
   server.use(cors());
