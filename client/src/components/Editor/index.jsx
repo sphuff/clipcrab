@@ -151,8 +151,15 @@ export default class Editor extends Component {
               serverVideoFileURL: serverVideoFileURL,
               loadingText: 'Encoding video. Almost there.',
             });
-            await encodeVideo(serverAudioFileURL, serverVideoFileURL);
-            this.clearVideoAndAudio();
+            try {
+              await encodeVideo(serverAudioFileURL, serverVideoFileURL);
+              this.clearVideoAndAudio();
+            } catch(err) {
+              this.setState({
+                isRecording: false,
+              });
+              this.pauseAudio();
+            }
           }
       
           mediaRecorder.start();
