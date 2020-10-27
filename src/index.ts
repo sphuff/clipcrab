@@ -60,7 +60,8 @@ createConnection({
       const user = await DBService.getUserByAuth0Id(req.user.id);
       await DBService.createUserEncode(user, filename);
       const encodings = await DBService.getEncodingsForUser(user);
-      if (encodings.length > NUM_ALLOWED_ENCODINGS) {
+      const clipLimit = user.numAllowedClipsTotal || NUM_ALLOWED_ENCODINGS;
+      if (encodings.length > clipLimit) {
         res.status(403).json({ error: 'You have hit your allotment of free encodings. Please contact support at clipcrab@gmail.com.' });
         return;
       }

@@ -53,7 +53,7 @@ export default class App extends Component {
     if (error) {
       console.log('there was an error', error);
       toast.error(error);
-      return;
+      throw error;
     }
 
     const axiosInstance = Axios.create();
@@ -189,6 +189,7 @@ export default class App extends Component {
               soundFileURL={soundFileURL}
               wordBlocks={wordBlocks}
               config={config}
+              finishedEncoding={finalVideoLocation}
               uploadFile={this.uploadFile.bind(this)}
               encodeVideo={this.encodeVideo.bind(this)}
               serverAudioFileURL={serverAudioFileURL}
