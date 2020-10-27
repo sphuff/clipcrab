@@ -14,6 +14,9 @@ const userInViews = require('./middleware/userInViews');
 
 const fileUpload = require('express-fileupload');
 import {createConnection} from 'typeorm';
+import DBService from './services/DBService';
+
+const NUM_ALLOWED_ENCODINGS = 3;
 
 console.log('ENV: ', process.env.NODE_ENV)
 
@@ -53,6 +56,14 @@ createConnection({
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
       const filename = path.basename(videoLocation);
+      // check count here
+      const user = await DBService.getUserByAuth0Id(req.user.id);
+      await DBService.createUserEncode(user, filename);
+      const encodings = await DBService.getEncodingsForUser(user);
+      if (encodings.length > NUM_ALLOWED_ENCODINGS) {
+        res.status(403).json({ error: 'You have hit your allotment of free encodings. Please contact support at clipcrab@gmail.com.' });
+        return;
+      }
       if (process.env.NODE_ENV === 'production') {
         try {
           // encoding taking too long - let run in background

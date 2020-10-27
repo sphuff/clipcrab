@@ -7,6 +7,7 @@ import { hexToRGB, getRandomColorHex, makeServerURL } from './utils';
 import { NORMAL_ALPHA, } from './constants';
 import Axios from 'axios';
 import FileSelector from './FileSelector';
+import { toast } from 'react-toastify';
 import axiosRetry from 'axios-retry';
 import walkthroughTranscription from './walkthrough-transcription.json';
 
@@ -48,7 +49,12 @@ export default class App extends Component {
       }),
     });
     const json = await res.json();
-    const fileName = json.fileName;
+    const { error, fileName } = json;
+    if (error) {
+      console.log('there was an error', error);
+      toast.error(error);
+      return;
+    }
 
     const axiosInstance = Axios.create();
     axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });

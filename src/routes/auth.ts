@@ -31,6 +31,7 @@ router.get('/callback', function (req, res, next) {
           userEntity = await DBService.createNewUser(user.id);
           console.log('created new user: ', userEntity);
         }
+        req.userEntity = userEntity;
         const returnTo = req.session.returnTo;
         delete req.session.returnTo;
         res.redirect(returnTo || '/');

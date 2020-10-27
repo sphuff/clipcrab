@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from "typeorm";
+import {UserEncode} from './UserEncode';
 
 @Entity()
 export class User {
@@ -19,4 +20,6 @@ export class User {
     })
     numAllowedClipsMonthly?: number;
 
+    @OneToMany(() => UserEncode, encoding => encoding.user)
+    encodings: UserEncode[];
 }
