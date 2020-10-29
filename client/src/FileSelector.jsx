@@ -17,8 +17,11 @@ export default function FileSelector({ cta, onFileSelect, inputId, customText, s
     return (
         <form>
             { showCTA && <h4 className='font-semibold text-base py-4'>{cta}</h4>}
-            <label htmlFor={id} className='cursor-pointer rounded text-sm bg-gray-400 px-4 py-2'><i className='fas fa-upload'></i> {text}</label>
-            <input id={id} type="file" className='invisible' ref={fileRef} onChange={(e) => fileSelected(e)}/>
+            <label htmlFor={id} className='cursor-pointer rounded text-sm bg-gray-400 px-4 py-2 float-left'>
+                <i className='fas fa-upload'></i>
+                {text}
+            </label>
+            <input id={id} type="file" className='invisible w-2 h-2' ref={fileRef} onChange={(e) => fileSelected(e)}/>
         </form>
     );
 }
