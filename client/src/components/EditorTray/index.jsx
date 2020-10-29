@@ -17,8 +17,11 @@ export default class EditorTray extends Component {
                     <FileSelector cta={'Input a background image'} onFileSelect={onBackgroundImageSelect}/>
                     <button className='record-button inline bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded text-base' onClick={onRecord}>Record</button>
                 </div>
-                <div className='flex w-full order-first justify-between lg:hidden bg-gray-400 p-2'>
+                <div className='editor-tray-sm flex items-center w-full order-first justify-between lg:hidden bg-gray-300 p-2 overflow-x-scroll'>
                     <ColorPicker onColorSelect={onColorSelect} hexColor={hexColor} />
+                    <AspectRatioSelector onSelectAspectRatio={onSelectAspectRatio} aspectRatio={aspectRatio} />
+                    <FileSelector cta={'Input a logo image'} onFileSelect={onCoverImageSelect} customText='Upload Logo Image' showCTA={false}/>
+                    <FileSelector cta={'Input a background image'} onFileSelect={onBackgroundImageSelect} customText='Upload Background Image' showCTA={false}/>
                     <button className='record-button inline bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded text-xs' onClick={onRecord}>Record</button>
                 </div>
             </>

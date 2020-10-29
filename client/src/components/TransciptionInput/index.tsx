@@ -73,7 +73,7 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
     if (!soundLoaded) return null;
     
     return (
-        <div className='bg-white h-full min-h-full p-4 overflow-y-scroll'>
+        <div className='bg-white p-4 overflow-y-scroll'>
             <h4 className='text-md'>Click to create animation blocks. Click again to break up blocks. Right click to edit each word. Drag for more fine-grained control of blocks.</h4>
             <div className={`transcriptionInput-container`}>
                 {wordBlocks.map((wordBlock, idx) => {
@@ -91,7 +91,7 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
                 })}
             </div>
             { !loadedTranscription && !isLoadingTranscription && (
-                <div className='flex items-center flex-col'>
+                <div className='flex items-center flex-col p-4'>
                     <span>Want your real text transcribed?</span>
                     <button className='block px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded' onClick={loadTranscription}>Transcribe Text</button>
                 </div>

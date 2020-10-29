@@ -21,6 +21,8 @@ export default class Editor extends Component {
             app: null,
             finishedEncoding: false,
             pauseTime: null,
+            canvasWidth: null,
+            canvasHeight: null,
             isRecording: false,
             loadingText: null,
             aspectRatio: 'square',
@@ -33,7 +35,7 @@ export default class Editor extends Component {
         const canvas = document.getElementById('myCanvas');
         // set resolution to avoid font blurring
         // NOTE: everything will need to be scaled by 0.5 to make up for resolution
-        // PIXI.settings.RESOLUTION = 2;  
+        // PIXI.settings.RESOLUTION = 2;
         const app = new PIXI.Application({
           width: width,
           height: height,
