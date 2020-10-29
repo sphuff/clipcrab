@@ -27,6 +27,7 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
         wavesurferInst.on('seek', function (seekPercentage) {
             console.log('seek in timeline', seekPercentage);
             onSeek(duration * seekPercentage);
+            wavesurferInst.play(duration * seekPercentage);
         });
     }
     
@@ -56,7 +57,7 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
     }
 
     return (
-        <div className='h-full w-full flex items-center justify-around p-2'>
+        <div className='timelineContainer w-full flex items-center justify-around p-2'>
             <div className='h-full w-5/6'>
                 <div id="waveform" ref={waveformRef}></div>
                 <div id="wave-timeline" className=''></div>
