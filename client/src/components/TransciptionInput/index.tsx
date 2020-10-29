@@ -91,9 +91,8 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
                 })}
             </div>
             { !loadedTranscription && !isLoadingTranscription && (
-                <div className='flex items-center flex-col p-4'>
-                    <span>Want your real text transcribed?</span>
-                    <button className='block px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded' onClick={loadTranscription}>Transcribe Text</button>
+                <div className='flex items-center flex-col'>
+                    <button className='block px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded' onClick={loadTranscription}>Transcribe Audio</button>
                 </div>
             )}
             {isLoadingTranscription && (
