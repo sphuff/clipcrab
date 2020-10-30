@@ -34,7 +34,8 @@ export default function Background ({ stage, width, height, hexColor, background
         }
         imageSprite.zIndex = 2;
         setBackgroundImageSprite(imageSprite);
-    }, [stage, backgroundImage, backgroundImageSprite, height]);
+        // eslint-disable-next-line
+    }, [stage, backgroundImage, height]);
 
     return null;
 }

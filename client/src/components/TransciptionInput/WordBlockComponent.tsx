@@ -1,11 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { NORMAL_ALPHA, HOVER_ALPHA } from '../../constants';
-import { Tooltip, Overlay } from 'react-bootstrap';
 import './index.scss';
 import WordBlock from './WordBlock';
-
-const NO_CHILDREN_TOOLTIP_MESSAGE = 'Click on a single word to create an animation block with its neighbors on the left. Or, drag it towards the right. You can also edit the text by right clicking.';
-const CHILDREN_TOOLTIP_MESSAGE = 'Click on an already existing animation block to break it up. Or, drag it to grow. You can also edit the text by right clicking.';
 
 export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wordBlock: WordBlock, updateTextBlocks: Function}) {
     const [isEditing, setIsEditing] = useState(false);
@@ -14,8 +10,6 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
     const editRef: React.RefObject<any> = React.createRef();
     wordBlock.ref = ref;
     const [text, setText] = useState(wordBlock.word);
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [tooltipText] = useState(getTooltipText(wordBlock));
 
     useEffect(() => {
         setText(wordBlock.getText());
@@ -30,14 +24,12 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
     const onHoverOver = (evt: any, wordBlock: WordBlock) => {
         if (!wordBlock.ref) return;
         wordBlock.ref.current.style.backgroundColor = `${wordBlock.rgba.replace(NORMAL_ALPHA, HOVER_ALPHA)}`
-        setShowTooltip(true);
     }
     
     const onHoverLeave = (evt: React.MouseEvent<HTMLSpanElement>, wordBlock: WordBlock) => {
         if (!wordBlock.ref) return;
         wordBlock.ref.current.style.backgroundColor = `${wordBlock.rgba.replace(HOVER_ALPHA, NORMAL_ALPHA)}`
         wordBlock.ref.current.style.cursor = '';
-        setShowTooltip(false);
     }
 
     // const changeCursor = (evt: any) => {
@@ -154,18 +146,6 @@ export default function WordBlockComponent({ wordBlock, updateTextBlocks }: {wor
             >
                 {text}
             </span>
-            <Overlay target={ref.current} show={showTooltip} placement='top'>
-                <Tooltip id={`tooltip-wordblock-${wordBlock.id}`}>
-                    <div className='flex justify-center relative bg-black px-4 py-2 rounded text-white text-xs'>
-                        { tooltipText }
-                        <div className='bg-black absolute m-auto min-h-8 min-w-8 rotate-45 bottom-0 transform translate-y-1/2'></div>
-                    </div>
-                </Tooltip>
-            </Overlay>
         </>
     );
-}
-
-const getTooltipText = (wordBlock: WordBlock): string => {
-    return wordBlock.hasChildren() ? CHILDREN_TOOLTIP_MESSAGE : NO_CHILDREN_TOOLTIP_MESSAGE;
 }

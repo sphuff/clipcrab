@@ -175,7 +175,9 @@ export default class App extends Component {
         </header>
         <div className='appContainer-contentContainer max-w-screen flex-1 flex justify-center items-center'>
           { !hasSelectedSound && (
-            <FileSelector onFileSelect={this.selectedSound.bind(this)} cta={'Input your mp3 file (1MB limit)'} inputId='audio-input'/>
+            <div className='px-4'>
+              <FileSelector onFileSelect={this.selectedSound.bind(this)} cta={'Input your mp3 file (1MB limit)'} inputId='audio-input'/>
+            </div>
           )}
 
           { isLoading && (
