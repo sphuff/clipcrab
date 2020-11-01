@@ -3,6 +3,13 @@ const ForcedAlignmentController = require('../../src/controllers/ForcedAlignment
 
 describe('ForcedAlignmentController', () => {
     it('alignMedia', () => {
-        expect(ForcedAlignmentController.alignMedia()).to.not.be.null;
+        const text = 'hi there';
+        const wordBlocks = ForcedAlignmentController.getWordBlocksFromMedia(text);
+        expect(wordBlocks).to.not.be.null;
+        const firstBlock = wordBlocks[0];
+        expect(firstBlock).to.haveOwnProperty('text');
+        expect(firstBlock).to.haveOwnProperty('endTime');
+        expect(firstBlock).to.haveOwnProperty('startTime');
+        expect(firstBlock.text).to.equal(text);
     });
 })

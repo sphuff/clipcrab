@@ -1,5 +1,9 @@
 module.exports = class ForcedAlignmentController {
-    static alignMedia() {
-        return null;
+    static getWordBlocksFromMedia(transcribedText, audioURL) {
+        return [{
+            text: transcribedText,
+            startTime: 0,
+            endTime: 10,
+        }];
     }
 }

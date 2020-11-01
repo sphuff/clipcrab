@@ -22,6 +22,7 @@ console.log('ENV: ', process.env.NODE_ENV)
 
 const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
+const ForcedAlignmentController = require('./controllers/ForcedAlignmentController');
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
@@ -112,9 +113,18 @@ createConnection({
       console.log('not ready');
       return res.status(429).send();
     }
-    const wordBlocks = await TranscriptionController.getWordBlocks(jobId, isProd);
-    res.json({ wordBlocks });
+    const { wordBlocks, text } = await TranscriptionController.getWordBlocks(jobId, isProd);
+    res.json({ wordBlocks, text });
   });
+
+  server.post('/align', async (req, res) => {
+    const { transcribedText } = req.body;
+    const wordBlocks = ForcedAlignmentController.getWordBlocksFromMedia(transcribedText);
+    res.json({
+      wordBlocks,
+      text: transcribedText,
+    });
+  })
   
   
   server.post('/upload', (req, res, next) => {

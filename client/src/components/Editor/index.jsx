@@ -214,7 +214,7 @@ export default class Editor extends Component {
 
     render() {
       const { app, hexColor, textBlocks, coverImage, loadingText, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding, aspectRatio } = this.state;
-      const { sound, soundFileURL, wordBlocks, loadedTranscription, config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
+      const { sound, soundFileURL, wordBlocks, loadedTranscription, alignedTranscription, transcribedText, alignTranscription, config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
       const isPlayingAudio = !(!!pauseTime);
 
       return (
@@ -235,7 +235,7 @@ export default class Editor extends Component {
               <EditorTray onRecord={this.recordVideo.bind(this)} aspectRatio={aspectRatio} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onCoverImageSelect={this.selectedCoverImage.bind(this)} onBackgroundImageSelect={this.selectedBackgroundImage.bind(this)} onSelectAspectRatio={this.onSelectAspectRatio.bind(this)}/>
               <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
               {/* might need to render for sound loaded */}
-              <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)} requestTranscription={this.requestTranscription.bind(this)} loadedTranscription={loadedTranscription}/>
+              <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)} requestTranscription={this.requestTranscription.bind(this)} loadedTranscription={loadedTranscription} transcribedText={transcribedText} alignTranscription={alignTranscription} alignedTranscription={alignedTranscription}/>
               <Background stage={app && app.stage} width={width} height={height} hexColor={hexColor} backgroundImage={backgroundImage}/>
               <CoverImage pixiApp={app} {...coverImageProps} icon={coverImage}/>
               <TextBlock pixiApp={app} fps={fps} seekTo={seekTo} {...textProps} textBlocks={textBlocks} pauseAt={pauseTime}/>

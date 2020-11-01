@@ -30,7 +30,8 @@ export default class App extends Component {
       loadingSubText: null,
       hasSelectedSound: false, 
       loadedTranscription: false,
-      isReadyForVideoEditor: false,
+      alignedTranscription: false,
+      transcribedText: null,
       finalVideoLocation: null,
       restartSound: 0,
       seekTo: 0,
@@ -90,13 +91,24 @@ export default class App extends Component {
     const axiosInstance = Axios.create();
     axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     const transcriptionRes = await axiosInstance.get(makeServerURL('/transcription'), { params: { jobId } });
-    const { wordBlocks } = transcriptionRes.data;
+    const { wordBlocks, text } = transcriptionRes.data;
 
     this.setState({
       loadedTranscription: true,
       isLoading: false,
+      transcribedText: text,
       wordBlocks: this.initWordBlocks(wordBlocks),
       loadingText: null,
+    });
+  }
+
+  async alignTranscription(transcribedText) {
+    const res = await Axios.post(makeServerURL('/align'), { transcribedText });
+    const { wordBlocks, text } = res.data;
+    this.setState({
+      wordBlocks: this.initWordBlocks(wordBlocks),
+      transcribedText: text,
+      alignedTranscription: true,
     });
   }
 
@@ -158,7 +170,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { serverAudioFileURL, isLoading, loadingText, loadingSubText, loadedTranscription, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
+    const { serverAudioFileURL, isLoading, loadingText, loadingSubText, loadedTranscription, alignedTranscription, transcribedText, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
     const isReadyForVideoEditor = !!sound;
 
     if (finalVideoLocation) {
@@ -196,6 +208,9 @@ export default class App extends Component {
               encodeVideo={this.encodeVideo.bind(this)}
               serverAudioFileURL={serverAudioFileURL}
               loadedTranscription={loadedTranscription}
+              transcribedText={transcribedText}
+              alignedTranscription={alignedTranscription}
+              alignTranscription={this.alignTranscription.bind(this)}
               requestTranscription={this.requestTranscription.bind(this)}
             />
           )}
