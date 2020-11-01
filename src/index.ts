@@ -15,6 +15,7 @@ const userInViews = require('./middleware/userInViews');
 const fileUpload = require('express-fileupload');
 import {createConnection} from 'typeorm';
 import DBService from './services/DBService';
+import * as fs from 'fs';
 
 const NUM_ALLOWED_ENCODINGS = 3;
 
@@ -22,7 +23,9 @@ console.log('ENV: ', process.env.NODE_ENV)
 
 const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
-const ForcedAlignmentController = require('./controllers/ForcedAlignmentController');
+import ForcedAlignmentController from './controllers/ForcedAlignmentController';
+import * as https from 'https';
+import { Readable, PassThrough } from 'stream';
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
@@ -118,12 +121,27 @@ createConnection({
   });
 
   server.post('/align', async (req, res) => {
-    const { transcribedText } = req.body;
-    const wordBlocks = ForcedAlignmentController.getWordBlocksFromMedia(transcribedText);
-    res.json({
-      wordBlocks,
-      text: transcribedText,
-    });
+    const { transcribedText, audioPath } = req.body;
+    try {
+      const transcribedTextStream = new Readable();
+      transcribedTextStream.push(transcribedText);
+      transcribedTextStream.push(null);
+      let audioOutStream = fs.createWriteStream('out.mp3');
+      let audioInStream = fs.createReadStream('out.mp3');
+      // want to pipe the audio directly to gentle
+      https.get(audioPath, res => {
+        res.pipe(audioOutStream);
+      });
+
+      console.log(transcribedTextStream, audioOutStream, audioInStream);
+      const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedTextStream, audioInStream);
+      res.json({
+        wordBlocks,
+        text: transcribedText,
+      });
+    } catch(err) {
+      console.log('Alignment error: ', err);
+    }
   })
   
   

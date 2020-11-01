@@ -103,7 +103,10 @@ export default class App extends Component {
   }
 
   async alignTranscription(transcribedText) {
-    const res = await Axios.post(makeServerURL('/align'), { transcribedText });
+    const {
+      serverAudioFileURL
+    } = this.state;
+    const res = await Axios.post(makeServerURL('/align'), { transcribedText, audioPath: serverAudioFileURL });
     const { wordBlocks, text } = res.data;
     this.setState({
       wordBlocks: this.initWordBlocks(wordBlocks),

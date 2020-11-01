@@ -8,6 +8,7 @@ jobs:
         environment:
           ## this enables colors in the output
           TERM: xterm
+      - image: lowerquality/gentle
       - image: circleci/postgres:12-alpine
         # auth:
         #   username: root
