@@ -24,9 +24,9 @@ console.log('ENV: ', process.env.NODE_ENV)
 const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
-import { Readable } from 'stream';
 import SmsService from './services/SmsService';
-import TranscriptionController, { STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } from './controllers/TranscriptionController';
+import TranscriptionController, { STATUS_TRANSCRIBED } from './controllers/TranscriptionController';
+import { UserRequest, FileRequest } from './types/Requests';
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
 
@@ -55,7 +55,7 @@ createConnection({
       })
     );
   
-  server.post('/encode', async (req, res) => {
+  server.post('/encode', async (req: UserRequest, res) => {
       console.log(req.body);
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
@@ -126,7 +126,7 @@ createConnection({
     res.json({ wordBlocks, text });
   });
 
-  server.post('/align', async (req, res) => {
+  server.post('/align', async (req: FileRequest, res) => {
     const { transcribedText } = req.body;
     let audioFile = req.files.file;
     const audioFilePath = audioFile.tempFilePath;
@@ -144,7 +144,7 @@ createConnection({
   })
   
   
-  server.post('/upload', (req, res, next) => {
+  server.post('/upload', (req: FileRequest, res, next) => {
       let uploadFile = req.files.file;
       const name = uploadFile.name;
       const saveAs = `${name}`;
@@ -186,5 +186,6 @@ createConnection({
   server.listen(process.env.PORT || 3001, async () => {
     console.log('server started');
   });
+  // @ts-ignore
   server.timeout = 60000;
 });
