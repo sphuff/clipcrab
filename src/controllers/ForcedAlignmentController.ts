@@ -3,45 +3,32 @@ import * as FormData from 'form-data';
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import WordBlock from '../types/WordBlock';
-
-export enum GentleCase {
-    Success = 'success',
-    NotFoundInAudio = 'not-found-in-audio',
-}
-export type GentleWord = {
-    alignedWord: string;
-    case: GentleCase;
-    end: number;
-    start: number;
-    endOffset: number;
-    startOffset: number;
-    word: string;
-}
-type GentleResponse = {
-    transcript: string;
-    words: GentleWord[];
-}
+import { GentleCase, GentleResponse, GentleWord } from '../types/Gentle';
 
 export default class ForcedAlignmentController {
-    static async getWordBlocksFromMediaStreams(transcribedTextPath: Readable | fs.ReadStream, audioPath: fs.ReadStream): Promise<WordBlock[]> {
+    static async getWordBlocksFromMediaStreams(transcribedText: string, audioPath: fs.ReadStream): Promise<WordBlock[]> {
         const params = new FormData();
         params.append('audio', audioPath);
-        params.append('transcript', transcribedTextPath);
+        const transcribedTextStream = new Readable();
+        transcribedTextStream.push(transcribedText);
+        transcribedTextStream.push(null);
+        params.append('transcript', transcribedTextStream);
         // can spin up gentle locally and hit that instead
         const res = await fetch('http://161.35.109.218:8765/transcriptions?async=false', {
             method: 'POST',
             body: params,
         });
         const json: GentleResponse  = await res.json();
-        return this._getWordBlocks(json.words);
+        return this._getWordBlocks(json.words, transcribedText);
     }
     
-    static _getWordBlocks(gentleWords: GentleWord[]): WordBlock[] {
+    static _getWordBlocks(gentleWords: GentleWord[], originalText: string): WordBlock[] {
         return this._extrapolateClipTimes(gentleWords).map(word => {
+            const text = originalText.slice(word.startOffset, word.endOffset + 1).trim();
             return {
                 startTime: word.start,
                 endTime: word.end,
-                text: word.word,
+                text,
             }
         });
     }
