@@ -6,8 +6,10 @@ export interface UserRequest extends Request {
     userEntity: any;
     session: any;
     logout: Function;
+    body: any;
 }
 
 export interface FileRequest extends Request {
     files: any;
+    body: any;
 }

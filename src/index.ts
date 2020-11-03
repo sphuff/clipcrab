@@ -56,7 +56,6 @@ createConnection({
     );
   
   server.post('/encode', async (req: UserRequest, res) => {
-      console.log(req.body);
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
       const filename = path.basename(videoLocation);
