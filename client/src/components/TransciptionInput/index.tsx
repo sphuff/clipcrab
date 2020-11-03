@@ -26,7 +26,7 @@ const formSentences = (wordBlocks: Array<RawWordBlock>): Array<WordBlock> => {
         blockStart.children.push(block);
         block.isActive = false;
 
-        if (block.word.includes('.')) {
+        if (block.word.match(/\.|\?/)) {
             blockStart = undefined;
         }
         return block;

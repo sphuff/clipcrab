@@ -26,7 +26,7 @@ const EncodingController = require('./controllers/EncodingController');
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
 import { Readable } from 'stream';
 import SmsService from './services/SmsService';
-const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
+import TranscriptionController, { STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } from './controllers/TranscriptionController';
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
 
@@ -126,12 +126,9 @@ createConnection({
     let audioFile = req.files.file;
     const audioFilePath = audioFile.tempFilePath;
     try {
-      const transcribedTextStream = new Readable();
-      transcribedTextStream.push(transcribedText);
-      transcribedTextStream.push(null);
       const audioStream = fs.createReadStream(audioFilePath);
 
-      const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedTextStream, audioStream);
+      const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedText, audioStream);
       res.json({
         wordBlocks,
         text: transcribedText,

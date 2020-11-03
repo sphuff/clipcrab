@@ -8,10 +8,10 @@ const transcriptionTextPath = path.join(__dirname, '../fixtures/mmbam.txt');
 
 describe('ForcedAlignmentController', function () {
     this.timeout(50000);
-    it.only('alignMedia', async () => {
-        const transcriptionStream = fs.createReadStream(transcriptionTextPath);
+    it('alignMedia', async () => {
+        const transcribedText = fs.readFileSync(transcriptionTextPath).toString();
         const audioStream = fs.createReadStream(mp3Path);
-        const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcriptionStream, audioStream);
+        const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedText, audioStream);
         expect(wordBlocks).to.not.be.null;
         const firstBlock = wordBlocks[0];
         expect(firstBlock).to.haveOwnProperty('text');

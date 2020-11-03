@@ -1,5 +1,5 @@
-const { expect } = require('chai');
-const { TranscriptionController } = require('../../src/controllers/TranscriptionController');
+import { expect } from 'chai';
+import TranscriptionController from '../../src/controllers/TranscriptionController';
 const mmbamJson = require('../fixtures/rev-ai-mmbam.json');
 
 describe('TranscriptionController - Get word blocks from rev.ai transcription object', () => {
