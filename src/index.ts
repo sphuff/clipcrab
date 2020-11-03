@@ -25,6 +25,7 @@ const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
 import { Readable } from 'stream';
+import SmsService from './services/SmsService';
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
@@ -62,6 +63,7 @@ createConnection({
       // check count here
       const user = await DBService.getUserByAuth0Id(req.user.id);
       await DBService.createUserEncode(user, filename);
+      SmsService.sendTextToSelf('New video created on ClipCrab');
       const encodings = await DBService.getEncodingsForUser(user);
       const clipLimit = user.numAllowedClipsTotal || NUM_ALLOWED_ENCODINGS;
       if (encodings.length > clipLimit) {

@@ -3,6 +3,7 @@ import * as passport from 'passport';
 import DBService from '../services/DBService';
 import * as querystring from 'querystring';
 import * as url from 'url';
+import SmsService from '../services/SmsService';
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router.get('/callback', function (req, res, next) {
           console.log('creating new user: ', user.id);
           userEntity = await DBService.createNewUser(user.id);
           console.log('created new user: ', userEntity);
+          SmsService.sendTextToSelf('New user signup on ClipCrab');
         }
         req.userEntity = userEntity;
         const returnTo = req.session.returnTo;
