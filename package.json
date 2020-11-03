@@ -44,7 +44,7 @@
       "build:ci": "BASE_URL=http://localhost:3001 cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
       "heroku-postbuild": "BASE_URL=http://app.clipcrab.com cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
       "cypress:open": "cypress open",
-      "cypress:test": "cypress run --record --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
+      "cypress:test": "cypress run --record --headless -b chrome --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
       "test": "mocha --require ts-node/register tests/**/*.ts"
    }
 }
