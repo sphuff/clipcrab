@@ -31,7 +31,7 @@ router.get('/callback', function (req, res, next) {
           console.log('creating new user: ', user.id);
           userEntity = await DBService.createNewUser(user.id);
           console.log('created new user: ', userEntity);
-          SmsService.sendTextToSelf('New user signup on ClipCrab');
+          await SmsService.sendTextToSelf('New user signup on ClipCrab');
         }
         req.userEntity = userEntity;
         const returnTo = req.session.returnTo;

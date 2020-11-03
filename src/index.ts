@@ -63,7 +63,7 @@ createConnection({
       // check count here
       const user = await DBService.getUserByAuth0Id(req.user.id);
       await DBService.createUserEncode(user, filename);
-      SmsService.sendTextToSelf('New video created on ClipCrab');
+      await SmsService.sendTextToSelf('New video created on ClipCrab');
       const encodings = await DBService.getEncodingsForUser(user);
       const clipLimit = user.numAllowedClipsTotal || NUM_ALLOWED_ENCODINGS;
       if (encodings.length > clipLimit) {
