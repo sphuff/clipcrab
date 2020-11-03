@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
-const express = require('express');
+import * as express from 'express';
 const server = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -100,12 +100,17 @@ createConnection({
   });
   
   
-  server.post('/transcribe', async (req, res) => {
+  server.post('/transcribe', async (req, res: express.Response) => {
       const { audioURL } = req.body;
       // const isProd = true;
       const isProd = process.env.NODE_ENV === 'production';
-      const jobId = await TranscriptionController.submitTranscriptionJob(audioURL, isProd)
-      res.json({ jobId });
+      try {
+        const jobId = await TranscriptionController.submitTranscriptionJob(audioURL, isProd)
+        res.json({ jobId });
+      } catch(err) {
+        console.log('Transcription job err', err);
+        res.status(500).send();
+      }
   });
   
   server.get('/transcription', async (req, res) => {
@@ -150,7 +155,7 @@ createConnection({
         if (err) {
           return res.status(500).send(err);
         }
-        let s3Location = 'https://podcast-clipper.s3.amazonaws.com/uploads/mmbam.mp3';
+        let s3Location = 'https://podcast-clipper.s3.amazonaws.com/mmbam.mp3';
         if (process.env.NODE_ENV === 'production') {
             s3Location = await AWSService.uploadFile(fileLocation, saveAs);
         }

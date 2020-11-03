@@ -28,6 +28,5 @@ export const getRandomColorHex = () => {
 }
 
 export const makeServerURL = (path) => {
-    console.log('base', process.env.REACT_APP_BASE_URL );
-    return process.env.REACT_APP_BASE_URL ? `${process.env.REACT_APP_BASE_URL}${path}` : `http://localhost:3001${path}`;
+    return process.env.REACT_APP_BASE_URL ? `${process.env.REACT_APP_BASE_URL}${path}` : `http://localhost:3002${path}`;
 }

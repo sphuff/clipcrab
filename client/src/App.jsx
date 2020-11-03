@@ -85,7 +85,10 @@ export default class App extends Component {
     return { s3FileURL };
   }
 
-  async requestTranscription(fileURL) {
+  async requestTranscription() {
+    const {
+      serverAudioFileURL: fileURL
+    } = this.state;
     const res = await Axios.post(makeServerURL('/transcribe'), { audioURL: fileURL });
     const { jobId } = res.data;
     const axiosInstance = Axios.create();
