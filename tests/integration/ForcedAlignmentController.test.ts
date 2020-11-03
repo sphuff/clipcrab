@@ -7,9 +7,8 @@ const mp3Path = path.join(__dirname, '../fixtures/mmbam.mp3');
 const transcriptionTextPath = path.join(__dirname, '../fixtures/mmbam.txt');
 
 describe('ForcedAlignmentController', function () {
-    // @ts-ignore
     this.timeout(50000);
-    it('alignMedia', async () => {
+    it.only('alignMedia', async () => {
         const transcriptionStream = fs.createReadStream(transcriptionTextPath);
         const audioStream = fs.createReadStream(mp3Path);
         const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcriptionStream, audioStream);
