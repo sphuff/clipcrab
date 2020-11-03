@@ -12,6 +12,6 @@ describe('forced alignment', () => {
             .then(() => cy.contains('This is the text we got. Would you like to make any edits?'))
             .then(() => cy.get('.transcriptionInput-transcriptionEdit').clear().type('1234'))
             .then(() => cy.get('.transcriptionInput-transcriptionEditContainer').contains('Confirm').click())
-            .then(() => cy.get('.transcriptionInput-container').contains('1234'))
+            .then(() => cy.get('.transcriptionInput-container', { timeout: 60000 }).contains('1234'))
     });
 });
