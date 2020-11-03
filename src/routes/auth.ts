@@ -4,6 +4,7 @@ import DBService from '../services/DBService';
 import * as querystring from 'querystring';
 import * as url from 'url';
 import SmsService from '../services/SmsService';
+import { UserRequest } from '../types/Requests';
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get('/login', passport.authenticate('auth0', {
     res.redirect('/');
 });
 
-router.get('/callback', function (req, res, next) {
+router.get('/callback', function (req: UserRequest, res, next) {
     passport.authenticate('auth0', function (err, user, info) {
       if (err) { 
         console.log('passport auth err: ', err);
@@ -41,7 +42,7 @@ router.get('/callback', function (req, res, next) {
     })(req, res, next);
 });
 
-router.get('/logout', (req, res) => {
+router.get('/logout', (req: UserRequest, res) => {
     req.logout();
   
     var returnTo = req.protocol + '://' + req.hostname;
@@ -58,7 +59,7 @@ router.get('/logout', (req, res) => {
     });
     logoutURL.search = searchString;
   
-    res.redirect(logoutURL);
+    res.redirect(logoutURL.toString());
 });
 
 module.exports = router;
