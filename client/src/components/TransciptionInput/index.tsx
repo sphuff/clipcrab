@@ -33,14 +33,22 @@ const formSentences = (wordBlocks: Array<RawWordBlock>): Array<WordBlock> => {
     });
 }
 
-function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTextBlocks, requestTranscription, loadedTranscription }: { soundLoaded: boolean, wordBlocks: Array<RawWordBlock>, onUpdateTextBlocks: Function, requestTranscription: Function, loadedTranscription: boolean }) {
+function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTextBlocks, requestTranscription, alignTranscription, loadedTranscription, alignedTranscription, transcribedText }: { soundLoaded: boolean, wordBlocks: Array<RawWordBlock>, onUpdateTextBlocks: Function, requestTranscription: Function, alignTranscription: Function, loadedTranscription: boolean, alignedTranscription: boolean, transcribedText: string }) {
     const [wordBlocks, setWordBlocks] = useState<Array<WordBlock>>([]);
     const [isLoadingTranscription, setIsLoadingTranscription] = useState(false);
+    const [hasConfirmedTranscription, setHasConfirmedTranscription] = useState(false);
+    const [hasEditedTranscription, setHasEditedTranscription] = useState(false);
+    const [finalTranscription, setFinalTranscription] = useState(transcribedText);
+    const [isAligningTranscription, setIsAligningTranscription] = useState(false);
 
     useEffect(() => {
         const sentenceBlocks = formSentences(wordBlocksProp);
         setWordBlocks(sentenceBlocks);
     }, [wordBlocksProp]);
+
+    useEffect(() => {
+        setFinalTranscription(transcribedText);
+    }, [transcribedText]);
 
     useEffect(() => {
         updateTextBlocks();
@@ -67,14 +75,57 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
     const loadTranscription = (evt: any) => {
         setIsLoadingTranscription(true);
         requestTranscription()
-            .then(() => setIsLoadingTranscription(false));
+            .then(() => {
+                setIsLoadingTranscription(false);
+            });
+    }
+
+    const editedTranscription = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setFinalTranscription(evt.target.value);
+        !hasEditedTranscription && setHasEditedTranscription(true);
+    }
+
+    const finalizeTranscription = () => {
+        if (hasEditedTranscription) {
+            setIsAligningTranscription(true);
+            alignTranscription(finalTranscription);
+        }
+        setHasConfirmedTranscription(true);
     }
 
     if (!soundLoaded) return null;
+
+    if (!hasConfirmedTranscription && transcribedText) {
+        return (
+            <div className='transcriptionInput-transcriptionEditContainer bg-white p-4 flex flex-col'>
+                <span className='font-bold text-sm pb-2'>This is the text we got. Would you like to make any edits?</span>
+                <textarea
+                    className='transcriptionInput-transcriptionEdit flex-1 py-2'
+                    value={finalTranscription}
+                    onChange={(evt) => editedTranscription(evt)}
+                />
+                <div className='flex items-center flex-col'>
+                    <button
+                        className='block px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded'
+                        onClick={() => finalizeTranscription()}>Confirm</button>
+                </div>
+            </div>
+        )
+    }
+
+    if (isAligningTranscription && !alignedTranscription) {
+        return (
+            <div className='bg-white p-4 flex justify-center items-center'>
+                <div className='flex justify-center'>
+                    <LoadingIndicator text='Aligning text to audio. This will take a minute.' subText='(For a 30 second mp3, this will usually take around 20 seconds.)' />
+                </div>
+            </div>
+        )
+    }
     
     return (
         <div className='bg-white p-4 overflow-y-scroll'>
-            <h4 className='text-md'>Click to create animation blocks. Click again to break up blocks. Right click to edit each word. Drag for more fine-grained control of blocks.</h4>
+            <h4 className='text-xs'>Click to create animation blocks. Click again to break up blocks. Right click to edit each word. Drag for more fine-grained control of blocks.</h4>
             <div className={`transcriptionInput-container`}>
                 {wordBlocks.map((wordBlock, idx) => {
                     // wordBlock.prev = idx > 0 ? wordBlocks[idx - 1] : null;

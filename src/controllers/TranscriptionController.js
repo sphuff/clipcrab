@@ -84,7 +84,12 @@ module.exports = {
                     }
                 }
             });
-            return wordBlocks.filter(block => !!block);
+            const filteredWordBlocks = wordBlocks.filter(block => !!block);
+            const text = filteredWordBlocks.map(block => block.text).join(' ');
+            return {
+                wordBlocks: filteredWordBlocks,
+                text
+            };
         }
     }
 }

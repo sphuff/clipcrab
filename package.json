@@ -14,6 +14,7 @@
       "express-session": "^1.17.1",
       "ffmpeg": "^0.0.4",
       "fluent-ffmpeg": "^2.1.2",
+      "form-data": "^3.0.0",
       "mysql": "^2.14.1",
       "node-fetch": "^2.6.1",
       "passport": "^0.4.1",
@@ -27,7 +28,10 @@
       "typescript": "^4.0.3"
    },
    "devDependencies": {
+      "@types/chai": "^4.2.14",
+      "@types/mocha": "^8.0.3",
       "@types/node": "^8.0.29",
+      "@types/node-fetch": "^2.5.7",
       "chai": "^4.2.0",
       "cypress": "^5.4.0",
       "mocha": "^8.1.3",
@@ -40,7 +44,7 @@
       "build:ci": "BASE_URL=http://localhost:3001 cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
       "heroku-postbuild": "BASE_URL=http://app.clipcrab.com cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
       "cypress:open": "cypress open",
-      "cypress:test": "cypress run --record --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
-      "test": "mocha tests/**/*.js"
+      "cypress:test": "cypress run --record --headless -b chrome --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
+      "test": "mocha --require ts-node/register tests/**/*.ts"
    }
 }

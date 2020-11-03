@@ -1,0 +1,6 @@
+version: "3.8"
+services:
+  align-service:
+    image: lowerquality/gentle
+    ports:
+      - "8765:8765"

@@ -15,6 +15,7 @@ const userInViews = require('./middleware/userInViews');
 const fileUpload = require('express-fileupload');
 import {createConnection} from 'typeorm';
 import DBService from './services/DBService';
+import * as fs from 'fs';
 
 const NUM_ALLOWED_ENCODINGS = 3;
 
@@ -22,6 +23,8 @@ console.log('ENV: ', process.env.NODE_ENV)
 
 const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
+import ForcedAlignmentController from './controllers/ForcedAlignmentController';
+import { Readable } from 'stream';
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
@@ -112,9 +115,29 @@ createConnection({
       console.log('not ready');
       return res.status(429).send();
     }
-    const wordBlocks = await TranscriptionController.getWordBlocks(jobId, isProd);
-    res.json({ wordBlocks });
+    const { wordBlocks, text } = await TranscriptionController.getWordBlocks(jobId, isProd);
+    res.json({ wordBlocks, text });
   });
+
+  server.post('/align', async (req, res) => {
+    const { transcribedText } = req.body;
+    let audioFile = req.files.file;
+    const audioFilePath = audioFile.tempFilePath;
+    try {
+      const transcribedTextStream = new Readable();
+      transcribedTextStream.push(transcribedText);
+      transcribedTextStream.push(null);
+      const audioStream = fs.createReadStream(audioFilePath);
+
+      const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedTextStream, audioStream);
+      res.json({
+        wordBlocks,
+        text: transcribedText,
+      });
+    } catch(err) {
+      console.log('Alignment error: ', err);
+    }
+  })
   
   
   server.post('/upload', (req, res, next) => {

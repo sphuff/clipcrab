@@ -4,7 +4,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cypress/base:14.10.1
+      - image: cypress/browsers:node14.7.0-chrome84
         environment:
           ## this enables colors in the output
           TERM: xterm
@@ -34,5 +34,8 @@ jobs:
           command: yarn start
           background: true
       - run:
-          name: Run Tests
+          name: Run Cypress Tests
           command: yarn cypress:test
+      - run:
+          name: Run Mocha Tests
+          command: yarn test
