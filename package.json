@@ -42,7 +42,7 @@
       "dev": "nodemon src/index.js",
       "build:dev": "BASE_URL=http://localhost:3001 cd client && yarn build",
       "build:ci": "BASE_URL=http://localhost:3001 cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
-      "heroku-postbuild": "cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
+      "heroku-postbuild": "BASE_URL=https://app.clipcrab.com cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
       "cypress:open": "cypress open",
       "cypress:test": "cypress run --record --headless -b chrome --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
       "test": "mocha --require ts-node/register tests/**/*.ts"
