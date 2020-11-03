@@ -27,7 +27,8 @@ export default class ForcedAlignmentController {
         const params = new FormData();
         params.append('audio', audioPath);
         params.append('transcript', transcribedTextPath);
-        const res = await fetch('http://localhost:8765/transcriptions?async=false', {
+        // can spin up gentle locally and hit that instead
+        const res = await fetch('http://161.35.109.218:8765/transcriptions?async=false', {
             method: 'POST',
             body: params,
         });
