@@ -1,13 +1,14 @@
 import fetch from 'node-fetch';
 import * as FormData from 'form-data';
 import * as fs from 'fs';
+import { Readable } from 'stream';
 import WordBlock from '../types/WordBlock';
 
-enum GentleCase {
+export enum GentleCase {
     Success = 'success',
     NotFoundInAudio = 'not-found-in-audio',
 }
-type GentleWord = {
+export type GentleWord = {
     alignedWord: string;
     case: GentleCase;
     end: number;
@@ -22,7 +23,7 @@ type GentleResponse = {
 }
 
 export default class ForcedAlignmentController {
-    static async getWordBlocksFromMediaStreams(transcribedTextPath, audioPath): Promise<WordBlock[]> {
+    static async getWordBlocksFromMediaStreams(transcribedTextPath: Readable | fs.ReadStream, audioPath: fs.ReadStream): Promise<WordBlock[]> {
         const params = new FormData();
         params.append('audio', audioPath);
         params.append('transcript', transcribedTextPath);
@@ -41,6 +42,8 @@ export default class ForcedAlignmentController {
                 endTime: word.end,
                 text: word.word,
             }
-        })
+        }).filter(block => {
+            return block.startTime !== undefined && block.endTime !== undefined;
+        });
     }
 }

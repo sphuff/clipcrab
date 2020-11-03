@@ -24,8 +24,7 @@ console.log('ENV: ', process.env.NODE_ENV)
 const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
 const EncodingController = require('./controllers/EncodingController');
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
-import * as https from 'https';
-import { Readable, PassThrough } from 'stream';
+import { Readable } from 'stream';
 const { TranscriptionController, STATUS_NOT_TRANSCRIBED, STATUS_TRANSCRIBED } = require('./controllers/TranscriptionController');
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
@@ -121,20 +120,16 @@ createConnection({
   });
 
   server.post('/align', async (req, res) => {
-    const { transcribedText, audioPath } = req.body;
+    const { transcribedText } = req.body;
+    let audioFile = req.files.file;
+    const audioFilePath = audioFile.tempFilePath;
     try {
       const transcribedTextStream = new Readable();
       transcribedTextStream.push(transcribedText);
       transcribedTextStream.push(null);
-      let audioOutStream = fs.createWriteStream('out.mp3');
-      let audioInStream = fs.createReadStream('out.mp3');
-      // want to pipe the audio directly to gentle
-      https.get(audioPath, res => {
-        res.pipe(audioOutStream);
-      });
+      const audioStream = fs.createReadStream(audioFilePath);
 
-      console.log(transcribedTextStream, audioOutStream, audioInStream);
-      const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedTextStream, audioInStream);
+      const wordBlocks = await ForcedAlignmentController.getWordBlocksFromMediaStreams(transcribedTextStream, audioStream);
       res.json({
         wordBlocks,
         text: transcribedText,

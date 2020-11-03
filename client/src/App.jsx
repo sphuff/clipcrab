@@ -104,9 +104,12 @@ export default class App extends Component {
 
   async alignTranscription(transcribedText) {
     const {
-      serverAudioFileURL
+      soundFile,
     } = this.state;
-    const res = await Axios.post(makeServerURL('/align'), { transcribedText, audioPath: serverAudioFileURL });
+    let formData = new FormData();
+    formData.append('file', soundFile);
+    formData.append('transcribedText', transcribedText);
+    const res = await Axios.post(makeServerURL('/align'), formData);
     const { wordBlocks, text } = res.data;
     this.setState({
       wordBlocks: this.initWordBlocks(wordBlocks),
