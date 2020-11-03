@@ -26,7 +26,6 @@ const EncodingController = require('./controllers/EncodingController');
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
 import SmsService from './services/SmsService';
 import TranscriptionController, { STATUS_TRANSCRIBED } from './controllers/TranscriptionController';
-import { UserRequest, FileRequest } from './types/Requests';
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
 
@@ -55,11 +54,12 @@ createConnection({
       })
     );
   
-  server.post('/encode', async (req: UserRequest, res) => {
+  server.post('/encode', async (req, res) => {
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
       const filename = path.basename(videoLocation);
       // check count here
+      // @ts-ignore
       const user = await DBService.getUserByAuth0Id(req.user.id);
       await DBService.createUserEncode(user, filename);
       await SmsService.sendTextToSelf('New video created on ClipCrab');
@@ -125,8 +125,9 @@ createConnection({
     res.json({ wordBlocks, text });
   });
 
-  server.post('/align', async (req: FileRequest, res) => {
+  server.post('/align', async (req, res) => {
     const { transcribedText } = req.body;
+    // @ts-ignore
     let audioFile = req.files.file;
     const audioFilePath = audioFile.tempFilePath;
     try {
@@ -143,7 +144,8 @@ createConnection({
   })
   
   
-  server.post('/upload', (req: FileRequest, res, next) => {
+  server.post('/upload', (req, res, next) => {
+    // @ts-ignore
       let uploadFile = req.files.file;
       const name = uploadFile.name;
       const saveAs = `${name}`;

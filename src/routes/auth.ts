@@ -4,7 +4,6 @@ import DBService from '../services/DBService';
 import * as querystring from 'querystring';
 import * as url from 'url';
 import SmsService from '../services/SmsService';
-import { UserRequest } from '../types/Requests';
 
 const router = express.Router();
 
@@ -14,7 +13,7 @@ router.get('/login', passport.authenticate('auth0', {
     res.redirect('/');
 });
 
-router.get('/callback', function (req: UserRequest, res, next) {
+router.get('/callback', function (req, res, next) {
     passport.authenticate('auth0', function (err, user, info) {
       if (err) { 
         console.log('passport auth err: ', err);
@@ -24,6 +23,7 @@ router.get('/callback', function (req: UserRequest, res, next) {
         console.log('passport no user');
         return res.redirect('/login');
       }
+      // @ts-ignore
       req.logIn(user, async function (err) {
         if (err) { return next(err); }
         console.log('log in success', user.id);
@@ -34,15 +34,19 @@ router.get('/callback', function (req: UserRequest, res, next) {
           console.log('created new user: ', userEntity);
           await SmsService.sendTextToSelf('New user signup on ClipCrab');
         }
+        // @ts-ignore
         req.userEntity = userEntity;
+        // @ts-ignore
         const returnTo = req.session.returnTo;
+        // @ts-ignore
         delete req.session.returnTo;
         res.redirect(returnTo || '/');
       });
     })(req, res, next);
 });
 
-router.get('/logout', (req: UserRequest, res) => {
+router.get('/logout', (req, res) => {
+    // @ts-ignore
     req.logout();
   
     var returnTo = req.protocol + '://' + req.hostname;
