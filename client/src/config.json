@@ -46,13 +46,13 @@
 
         },
         "square": {
-            "width": 418,
-            "height": 418,
+            "width": 350,
+            "height": 350,
             "audiogram": {
                 "height": 97,
-                "width": 333,
+                "width": 278,
                 "alignX": "center",
-                "y": 284
+                "y": 237
             },
             "text": {
                 "alignX": "center",

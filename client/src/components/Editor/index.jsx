@@ -230,7 +230,7 @@ export default class Editor extends Component {
                 </div>
               )}
               <div className='flex-1 flex justify-center items-center'>
-                <canvas id="myCanvas" className='m-8 rounded shadow-lg max-h-full'></canvas>
+                <canvas id="myCanvas" className='mx-auto my-8 rounded shadow-lg max-h-full'></canvas>
               </div>
               <EditorTray onRecord={this.recordVideo.bind(this)} aspectRatio={aspectRatio} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onCoverImageSelect={this.selectedCoverImage.bind(this)} onBackgroundImageSelect={this.selectedBackgroundImage.bind(this)} onSelectAspectRatio={this.onSelectAspectRatio.bind(this)}/>
               <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>

@@ -100,7 +100,7 @@ function TranscriptionInput({soundLoaded, wordBlocks: wordBlocksProp, onUpdateTe
             <div className='transcriptionInput-transcriptionEditContainer bg-white p-4 flex flex-col'>
                 <span className='font-bold text-sm pb-2'>This is the text we got. Would you like to make any edits?</span>
                 <textarea
-                    className='transcriptionInput-transcriptionEdit flex-1 p-2 border border-gray-400'
+                    className='transcriptionInput-transcriptionEdit flex-1 p-2 border border-gray-400 min-h-100'
                     value={finalTranscription}
                     onChange={(evt) => editedTranscription(evt)}
                 />
