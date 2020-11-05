@@ -151,7 +151,7 @@ export default class Editor extends Component<Props,State>  {
           this.recorderTimeout = undefined;
         }
         
-        var options = {mimeType: 'video/webm; codecs=vp9'};
+        var options = {mimeType: 'video/webm; codecs=vp8'};
         const canvasEl = document.getElementById('myCanvas') as HTMLCanvasElement;
         if (!canvasEl) return;
     
@@ -178,7 +178,7 @@ export default class Editor extends Component<Props,State>  {
           // only when the recorder stops, we construct a complete Blob from all the chunks
           mediaRecorder.onstop = async e => {
             const videoBlob = new Blob(chunks, {
-              type: 'video/webm'
+              type: 'video/mp4'
             });
             const date = new Date();
             const videoFile = new File([videoBlob], `${soundFile.name}-${date.toISOString()}.mp4`);
