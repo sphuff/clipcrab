@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { ChangeEvent, Component } from 'react';
 import AudiogramCanvas from '../../AudiogramCanvas';
 import TextBlock from '../../TextBlock';
 import Background from '../../Background';
@@ -8,31 +8,63 @@ import Timeline from '../Timeline';
 import * as PIXI from 'pixi.js';
 import EditorTray from '../EditorTray';
 import LoadingIndicator from '../LoadingIndicator';
+import { Config, DisplayType } from '../../types/config';
 
-export default class Editor extends Component {
-    constructor(props) {
+type Props = {
+  sound: any,
+  soundFile: any,
+  soundFileURL: string,
+  wordBlocks: any,
+  config: Config,
+  finishedEncoding: boolean,
+  uploadFile: Function,
+  encodeVideo: Function,
+  serverAudioFileURL: string,
+  loadedTranscription: boolean,
+  transcribedText: string,
+  alignedTranscription: boolean,
+  alignTranscription: Function,
+  requestTranscription: Function,
+}
+type State = {
+  app: any,
+  hexColor: number,
+  textBlocks: any,
+  coverImage?: string,
+  loadingText?: string,
+  backgroundImage?: string,
+  pauseTime?: number,
+  restartSound: number,
+  seekTo: number,
+  isRecording: boolean,
+  finishedEncoding: boolean,
+  aspectRatio: DisplayType,
+}
+
+export default class Editor extends Component<Props,State>  {
+    recorderTimeout?: number = undefined;
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             hexColor: 0x1C396F,
-            coverImage: null,
-            backgroundImage: null,
+            coverImage: undefined,
+            backgroundImage: undefined,
             seekTo: 0,
             restartSound: 0,
-            app: null,
+            app: undefined,
             finishedEncoding: false,
-            pauseTime: null,
-            canvasWidth: null,
-            canvasHeight: null,
+            pauseTime: undefined,
             isRecording: false,
-            loadingText: null,
-            aspectRatio: 'square',
+            loadingText: undefined,
+            aspectRatio: DisplayType.SQUARE,
             textBlocks: [],
         };
     }
 
     async componentDidMount() {
         const { config: { layouts : { square: { width, height } } } } = this.props;
-        const canvas = document.getElementById('myCanvas');
+        const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
         // set resolution to avoid font blurring
         // NOTE: everything will need to be scaled by 0.5 to make up for resolution
         // PIXI.settings.RESOLUTION = 2;
@@ -51,7 +83,7 @@ export default class Editor extends Component {
         });
     }
 
-    async selectedCoverImage(e, file) {
+    async selectedCoverImage(e: ChangeEvent, file: File) {
         console.log('selected cover image', e, file);
         if (!file) return;
         if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
@@ -61,11 +93,11 @@ export default class Editor extends Component {
         console.log(e.currentTarget);
         this.setState({
           coverImage: URL.createObjectURL(file),
-          backgroundImage: null,
+          backgroundImage: undefined,
         });
     }
 
-    async selectedBackgroundImage(e, file) {
+    async selectedBackgroundImage(e: ChangeEvent, file: File) {
         console.log('selected background image', e, file);
         if (!file) return;
         if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
@@ -75,11 +107,11 @@ export default class Editor extends Component {
         console.log(e.currentTarget);
         this.setState({
           backgroundImage: URL.createObjectURL(file),
-          coverImage: null,
+          coverImage: undefined,
         });
     }
 
-    onSelectAspectRatio(aspectRatio) {
+    onSelectAspectRatio(aspectRatio: DisplayType) {
       const { config: { layouts : { [aspectRatio]: { width, height }}} } = this.props;
       const { app } = this.state;
       app.renderer.resize(width, height);
@@ -88,38 +120,39 @@ export default class Editor extends Component {
       });
     }
 
-    onUpdateTextBlocks(textBlocks, seekTo) {
+    onUpdateTextBlocks(textBlocks: any, seekTo: number) {
       this.audioSeek(seekTo);
       this.setState({
         textBlocks,
       });
     }
 
-    audioSeek(seekTo) {
+    audioSeek(seekTo: number) {
       this.setState({
         seekTo,
-        pauseTime: null,
+        pauseTime: undefined,
       });
     }
 
-    onColorSelect(hexColor) {
+    onColorSelect(hexColor: number) {
         this.setState({
           hexColor,
-          backgroundImage: null,
-          coverImage: null,
+          backgroundImage: undefined,
+          coverImage: undefined,
         });
     }
 
     async recordVideo() {
-        const { restartSound, sound, soundFile, uploadFile, serverAudioFileURL, encodeVideo } = this.props;
+        const { sound, soundFile, uploadFile, serverAudioFileURL, encodeVideo } = this.props;
+        const { restartSound } = this.state;
     
         if (this.recorderTimeout) {
           clearTimeout(this.recorderTimeout);
-          this.recorderTimeout = null;
+          this.recorderTimeout = undefined;
         }
         
         var options = {mimeType: 'video/webm; codecs=vp9'};
-        const canvasEl = document.getElementById('myCanvas');
+        const canvasEl = document.getElementById('myCanvas') as HTMLCanvasElement;
         if (!canvasEl) return;
     
         const frameRate = 60;
@@ -129,14 +162,15 @@ export default class Editor extends Component {
           restartSound: restartSound + 1,
           seekTo: 0,
           loadingText: 'Now recording. Please wait to complete',
-          pauseTime: null,
+          pauseTime: undefined,
           isRecording: true,
         }, () => {
+          // @ts-ignore
           const videoStream = canvasEl.captureStream(frameRate);
           sound.play();
 
           const mediaRecorder = new MediaRecorder(videoStream, options);
-          let chunks = [];
+          let chunks: Blob[] = [];
           mediaRecorder.ondataavailable = e => {
             chunks.push(e.data); // gets called at end
             console.log('data avail: ', chunks);
@@ -150,7 +184,6 @@ export default class Editor extends Component {
             const videoFile = new File([videoBlob], `${soundFile.name}-${date.toISOString()}.mp4`);
             const { s3FileURL: serverVideoFileURL } = await uploadFile(videoFile);
             this.setState({
-              serverVideoFileURL: serverVideoFileURL,
               loadingText: 'Encoding video. Almost there.',
             });
             try {
@@ -166,6 +199,7 @@ export default class Editor extends Component {
       
           mediaRecorder.start();
           const timeout = sound.duration * 1000;
+          // @ts-ignore
           this.recorderTimeout = setTimeout(() => {
               mediaRecorder.stop();
           }, timeout);
@@ -177,7 +211,7 @@ export default class Editor extends Component {
     playAudio() {
       if (this.state.pauseTime) {
         this.setState({
-          pauseTime: null,
+          pauseTime: undefined,
         }, () => {
           this.props.sound.resume();
         });
@@ -222,7 +256,7 @@ export default class Editor extends Component {
               { finishedEncoding && (
                 <div>Finished Encoding</div>
                 )}
-              { isRecording && (
+              { isRecording && loadingText && (
                 <div className='z-20 absolute top-0 h-screen w-screen bg-gray-500 bg-opacity-75 flex justify-center items-center'>
                   <div className='p-4 relative rounded bg-white'>
                     <LoadingIndicator text={loadingText} />
@@ -233,7 +267,7 @@ export default class Editor extends Component {
                 <canvas id="myCanvas" className='mx-auto my-8 rounded shadow-lg max-h-full'></canvas>
               </div>
               <EditorTray onRecord={this.recordVideo.bind(this)} aspectRatio={aspectRatio} onColorSelect={this.onColorSelect.bind(this)} hexColor={hexColor} onCoverImageSelect={this.selectedCoverImage.bind(this)} onBackgroundImageSelect={this.selectedBackgroundImage.bind(this)} onSelectAspectRatio={this.onSelectAspectRatio.bind(this)}/>
-              <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} textBlocks={textBlocks} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
+              <Timeline soundFileURL={soundFileURL} isPlayingAudio={isPlayingAudio} onSeek={this.audioSeek.bind(this)} playAudio={this.playAudio.bind(this)} pauseAudio={this.pauseAudio.bind(this)} duration={sound && sound.duration}/>
               {/* might need to render for sound loaded */}
               <TranscriptionInput soundLoaded={true} wordBlocks={wordBlocks} onUpdateTextBlocks={this.onUpdateTextBlocks.bind(this)} requestTranscription={this.requestTranscription.bind(this)} loadedTranscription={loadedTranscription} transcribedText={transcribedText} alignTranscription={alignTranscription} alignedTranscription={alignedTranscription}/>
               <Background stage={app && app.stage} width={width} height={height} hexColor={hexColor} backgroundImage={backgroundImage}/>

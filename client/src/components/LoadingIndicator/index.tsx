@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function LoadingIndicator({ text, subText }) {
+export default function LoadingIndicator({ text, subText }: ({ text: string, subText?: string})) {
     
     return (
         <div className='text-base font-bold flex items-center justify-center flex-wrap max-w-24rem'>

@@ -33,7 +33,6 @@ export default class App extends Component {
       alignedTranscription: false,
       transcribedText: null,
       finalVideoLocation: null,
-      restartSound: 0,
       seekTo: 0,
     };
   }

@@ -1,6 +1,7 @@
 import React from 'react';
+import { DisplayType } from '../../types/config';
 
-export default function AspectRatioSelector({ onSelectAspectRatio, aspectRatio }: { onSelectAspectRatio: Function, aspectRatio: string }) {
+export default function AspectRatioSelector({ onSelectAspectRatio, aspectRatio }: { onSelectAspectRatio: Function, aspectRatio: DisplayType }) {
     const onSelect = (e: any) => {
         onSelectAspectRatio(e.target.value);
     }
