@@ -22,7 +22,7 @@ const NUM_ALLOWED_ENCODINGS = 3;
 console.log('ENV: ', process.env.NODE_ENV)
 
 const { AWSService, STATUS_TRANSCODED } = require('./services/AWSService');
-const EncodingController = require('./controllers/EncodingController');
+import EncodingController from './controllers/EncodingController';
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
 import SmsService from './services/SmsService';
 import TranscriptionController, { STATUS_TRANSCRIBED } from './controllers/TranscriptionController';
