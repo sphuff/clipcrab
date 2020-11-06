@@ -5,8 +5,8 @@ export enum GentleCase {
 export type GentleWord = {
     alignedWord: string;
     case: GentleCase;
-    end: number;
-    start: number;
+    end?: number;
+    start?: number;
     endOffset: number;
     startOffset: number;
     word: string;

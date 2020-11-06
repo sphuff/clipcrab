@@ -71,6 +71,7 @@ createConnection({
       const encodings = await DBService.getEncodingsForUser(user);
       const clipLimit = user.numAllowedClipsTotal || NUM_ALLOWED_ENCODINGS;
       if (encodings.length > clipLimit) {
+        await SmsService.sendTextToSelf('User hit video limit');
         res.status(403).json({ error: 'You have hit your allotment of free encodings. Please contact support at clipcrab@gmail.com.' });
         return;
       }

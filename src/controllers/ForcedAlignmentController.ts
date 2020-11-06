@@ -50,20 +50,46 @@ export default class ForcedAlignmentController {
             return prev + curr;
         }, 0)) / definedBlocks.length;
 
-        return wordBlocks.filter(word => word.case === GentleCase.Success).map((block, idx) => {
+        return wordBlocks.map((block, idx) => {
             if (block.start === undefined) {
-                const startingBlock = wordBlocks.slice(idx).find(wordBlock => wordBlock.start !== undefined);
-                const startBlockIdx = wordBlocks.slice(idx).findIndex(wordBlock => wordBlock.start !== undefined);
-                const distance = startBlockIdx - idx;
-                block.start = startingBlock.start - (averageWordTime * distance);
+                block.start = this._approximateStartTime(wordBlocks, idx, averageWordTime);
             }
             if (block.end === undefined) {
-                const endingBlock = wordBlocks.slice(idx).find(wordBlock => wordBlock.end !== undefined);
-                const endBlockIdx = wordBlocks.slice(idx).findIndex(wordBlock => wordBlock.end !== undefined);
-                const distance = endBlockIdx - idx;
-                block.end = endingBlock.end - (averageWordTime * distance);
+                block.end = this._approximateEndTime(wordBlocks, idx, averageWordTime);
             }
             return block;
-        });
+        }).filter(block => block.start !== undefined && block.end !== undefined);
+    }
+
+    /**
+     * Approximate the start time by finding a nearby start time, and extrapolating based on 
+     * average word length. If none is found, you are at the end, so extrapolate it from the 
+     * nearest ending time. 
+     * 
+     * @param wordBlocks 
+     * @param idx 
+     * @param averageWordTime 
+     */
+    private static _approximateStartTime(wordBlocks: GentleWord[], idx: number, averageWordTime: number): number {
+        const startingBlock = wordBlocks.slice(idx).find(wordBlock => wordBlock.start !== undefined);
+        if (!startingBlock) {
+            // is at the end - extrapolate from end of NN
+            return wordBlocks[idx - 1].end + averageWordTime;
+        } else {
+            const startBlockIdx = wordBlocks.slice(idx).findIndex(wordBlock => wordBlock.start !== undefined);
+            const distance = startBlockIdx;
+            return startingBlock.start - (averageWordTime * distance);
+        }
+    }
+
+    /**
+     * Approximate the end time by adding average word length to own start time
+     * 
+     * @param wordBlocks 
+     * @param idx 
+     * @param averageWordTime 
+     */
+    private static _approximateEndTime(wordBlocks: GentleWord[], idx: number, averageWordTime: number): number {
+        return wordBlocks[idx].start + averageWordTime;
     }
 }
