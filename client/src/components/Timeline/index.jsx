@@ -62,7 +62,7 @@ export default function Timeline({ soundFileURL, playAudio, isPlayingAudio, paus
                 <div id="waveform" ref={waveformRef}></div>
                 <div id="wave-timeline" className=''></div>
             </div>
-            <div className='bg-white rounded px-4 py-2'>
+            <div className='timeline-playPauseBtn bg-white rounded px-4 py-2'>
                 <i className={`fas ${isPlayingAudio ? 'fa-pause' : 'fa-play'} cursor-pointer my-auto text-gray-600 hover:text-gray-800`} onClick={() => togglePlay()}></i>
             </div>
         </div>
