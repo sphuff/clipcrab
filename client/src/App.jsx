@@ -58,12 +58,15 @@ export default class App extends Component {
 
     const axiosInstance = Axios.create();
     axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
-    let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }});
-
-    console.log(encodingRes);
-    this.setState({
-      finalVideoLocation: encodingRes.data.finalVideoLocation,
-    });
+    try {
+      let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }});
+      console.log(encodingRes);
+      this.setState({
+        finalVideoLocation: encodingRes.data.finalVideoLocation,
+      });
+    } catch(err) {
+      alert(err.message);
+    }
   }
 
   exportVideo(blob) {
@@ -78,10 +81,14 @@ export default class App extends Component {
   async uploadFile(file) {
     let formData = new FormData();
     formData.append('file', file);
-    let res = await Axios.post(makeServerURL('/upload'), formData);
-    console.log(res);
-    const { s3FileURL } = res.data;
-    return { s3FileURL };
+    try {
+      let res = await Axios.post(makeServerURL('/upload'), formData);
+      console.log(res);
+      const { s3FileURL } = res.data;
+      return { s3FileURL };
+    } catch(err) {
+      alert(err.message);
+    }
   }
 
   async requestTranscription() {

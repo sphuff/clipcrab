@@ -26,6 +26,8 @@ import EncodingController from './controllers/EncodingController';
 import ForcedAlignmentController from './controllers/ForcedAlignmentController';
 import SmsService from './services/SmsService';
 import TranscriptionController, { STATUS_TRANSCRIBED } from './controllers/TranscriptionController';
+
+const asyncHandler = require('express-async-handler')
 const secured = require('./middleware/secured');
 const dbUrl = process.env.NODE_ENV === 'production' ? `${process.env.DATABASE_URL}?ssl=true` : process.env.DATABASE_URL;
 
@@ -54,9 +56,12 @@ createConnection({
       })
     );
   
-  server.post('/encode', async (req, res) => {
+  server.post('/encode', asyncHandler(async (req, res, next) => {
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
+      if (!videoLocation || !audioLocation) {
+        return res.status(400).json({ error: 'Must pass video and audio paths to encode' });
+      }
       const filename = path.basename(videoLocation);
       // check count here
       // @ts-ignore
@@ -70,18 +75,16 @@ createConnection({
         return;
       }
       if (process.env.NODE_ENV === 'production') {
-        try {
-          // encoding taking too long - let run in background
           EncodingController.combineAudioAndVideo(audioLocation, videoLocation)
-            .then((localOutputLocation) => AWSService.uploadTranscoding(localOutputLocation, filename));
-        } catch(err) {
-          console.log('encoding error:', err.message);
-          res.status(500).json({ error: err.message })
-        }
+            .then((localOutputLocation) => AWSService.uploadTranscoding(localOutputLocation, filename))
+            .catch(err => {
+              console.log('encoding error:', err.message);
+              res.status(500).json({ error: err.message })
+            });
       }
       // response is sent before transcoding is created/uploaded
       res.json({ fileName: filename });
-  });
+  }));
   
   server.get('/encoding', async (req, res) => {
     const { fileName } = req.query;
