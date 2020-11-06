@@ -23,7 +23,6 @@ export default class App extends Component {
       config,
       wordBlocks: [],
       soundFile: null,
-      coverImage: null,
       serverAudioFileURL: null,
       isLoading: false, 
       loadingText: null,

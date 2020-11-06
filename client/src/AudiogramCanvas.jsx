@@ -110,7 +110,7 @@ export default class AudiogramCanvas extends Component {
             this.startAnimation();
         }
         if (props.pauseAt !== this.props.pauseAt) {
-            const isPaused = this.props.pauseAt !== null;
+            const isPaused = this.props.pauseAt !== undefined;
             isPaused && this.ticker.stop();
             !isPaused && this.ticker.start();
         }

@@ -112,7 +112,7 @@ export default class TextBlock extends Component {
         this.textAnimations && this.textAnimations.map(textEl => {
             return pixiApp.stage.removeChild(textEl);
         });
-        if (pauseAt !== null) {
+        if (pauseAt !== undefined) {
             // start < pause < end
             let textBlockToAnimate = textBlocks.filter(block => block.startTime <= pauseAt && pauseAt <= block.endTime).shift();
             console.log(pauseAt, textBlocks, textBlockToAnimate);
