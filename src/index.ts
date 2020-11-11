@@ -62,7 +62,7 @@ createConnection({
 
   server.use(async (req, res, next) => {
     // helper func for local dev
-    if (process.env.NODE_ENV !== 'production' && !req.session.userEntity) {
+    if (process.env.NODE_ENV === 'development' && !req.session.userEntity) {
       console.log('set debug user');
       req.session.userEntity = await DBService.getUserById(1);
     }
@@ -102,10 +102,7 @@ createConnection({
   
   server.get('/encoding', async (req, res) => {
     const { fileName, encodingId } = req.query;
-    if (process.env.NODE_ENV !== 'production') {
-      res.json({ finalVideoLocation: 'https://podcast-clipper.s3.amazonaws.com/mmbam-wizardmp3-2020-09-30T203501300Z-1.mp4' });
-      return;
-    }
+
     const transcriptionStatus = await AWSService.getTranscodingStatus(fileName);
     if (transcriptionStatus !== STATUS_TRANSCODED) {
       console.log('transcode not ready');

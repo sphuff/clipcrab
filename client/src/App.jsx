@@ -46,7 +46,7 @@ export default class App extends Component {
       audioLocation: serverAudioFileURL,
     };
     const res = await Axios.post(makeServerURL('/encode'), body, getAxiosConfig());
-    const { error, fileName } = res.data;
+    const { error, fileName, encodingId } = res.data;
     if (error) {
       console.log('there was an error', error);
       toast.error(error);
@@ -56,11 +56,11 @@ export default class App extends Component {
     const axiosInstance = Axios.create();
     axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     try {
-      let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }}, getAxiosConfig());
+      let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName, encodingId }}, getAxiosConfig());
       console.log(encodingRes);
       this.setState({
         finalVideoLocation: encodingRes.data.finalVideoLocation,
-        encodingId: encodingRes.data.encodingId,
+        encodingId,
       });
     } catch(err) {
       alert(err.message);

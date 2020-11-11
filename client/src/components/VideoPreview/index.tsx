@@ -1,6 +1,7 @@
 import React from 'react';
 import PaymentOptions from '../PaymentOptions';
 import { Config, DisplayType } from '../../types/config';
+import { makeServerURL } from '../../utils';
 
 type Props = {
     encodingId: number;
@@ -14,8 +15,8 @@ const VideoPreview: React.FC<Props> = (props) => {
     const { width, height } = config.layouts[aspectRatio];
     return (
         <div className='flex flex-col'>
-            <video className='mx-auto my-8 rounded shadow-lg' src={videoURL} width={width} height={height}></video>
-            <PaymentOptions successURL={`http://localhost:3001/billing/success?encodingId=${encodingId}`}/>
+            <video className='mx-auto my-8 rounded shadow-lg' controls src={videoURL} width={width} height={height}></video>
+            <PaymentOptions successURL={makeServerURL(`/billing/success?encodingId=${encodingId}`)}/>
         </div>
     )
 }

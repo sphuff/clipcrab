@@ -8,8 +8,6 @@
       "body-parser": "^1.19.0",
       "connect-redis": "^5.0.0",
       "cookie-parser": "^1.4.5",
-      "cookie-session": "^1.4.0",
-      "cookies": "^0.8.0",
       "cors": "^2.8.5",
       "dotenv": "^8.2.0",
       "express": "^4.17.1",
@@ -44,6 +42,7 @@
    },
    "scripts": {
       "start": "ts-node src/index.ts",
+      "start:test": "NODE_ENV=test ts-node src/index.ts",
       "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
       "build:dev": "cd client && yarn build:dev",
       "build:ci": "cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build:dev",

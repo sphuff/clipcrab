@@ -59,6 +59,9 @@ module.exports = {
         };
     
         static getTranscodingStatus = (fileName) => {
+            if (process.env.NODE_ENV !== 'production') {
+                return STATUS_TRANSCODED;
+            }
             const params = {
                 Bucket: 'podcast-clipper-transcoder-lambda-transcode',
                 Key: fileName,
@@ -76,6 +79,9 @@ module.exports = {
         }
     
         static getTranscodedFile = (fileName) => {
+            if (process.env.NODE_ENV !== 'production') {
+                return 'https://podcast-clipper.s3.amazonaws.com/mmbam-wizardmp3-2020-09-30T203501300Z-1.mp4';
+            }
             const signedUrlExpireSeconds = 60 * 5;
             const contentDisposition = `attachment; filename=${fileName}`;
             const url = s3.getSignedUrl('getObject', {

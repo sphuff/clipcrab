@@ -28,10 +28,10 @@ jobs:
             CI: ""
       - run:
           name: Build Database
-          command: ./node_modules/ts-node/dist/bin.js ./node_modules/typeorm/cli.js migration:run
+          command: ./node_modules/ts-node/dist/bin.js ./node_modules/typeorm/cli.js schema:sync
       - run:
           name: Start Server
-          command: yarn start
+          command: yarn start:test
           background: true
       - run:
           name: Run Cypress Tests
