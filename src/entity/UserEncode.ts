@@ -12,6 +12,9 @@ export class UserEncode {
     @Column()
     videoName: string;
 
+    @Column({ nullable: true })
+    finalEncodingLocation?: string;
+
     @CreateDateColumn()
     created: string;
 }

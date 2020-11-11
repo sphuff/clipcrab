@@ -3,14 +3,16 @@ dotenv.config();
 import * as express from 'express';
 const server = express();
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+import billingRoutes from './routes/billing';
 
 const sessionMiddleware = require('./middleware/sessionMiddleware');
 const authMiddleware = require('./middleware/authMiddleware');
 const userInViews = require('./middleware/userInViews');
+import corsMiddleware from './middleware/corsMiddleware';
 
 const fileUpload = require('express-fileupload');
 import {createConnection} from 'typeorm';
@@ -36,16 +38,18 @@ createConnection({
   type: 'postgres',
   entities: [path.join(__dirname, './entity/**/*.ts')],
   synchronize: true,
-}).then(() => {
+}).then(async () => {
   server.use(bodyParser.json());
-  server.use(cors());
+  server.use(cookieParser());
   
   
+  corsMiddleware(server);
   sessionMiddleware(server);
   authMiddleware(server);
   server.use(userInViews());
   server.use(authRoutes);
   server.use('/', userRoutes);
+  server.use('/billing', billingRoutes);
   
   server.use(
       fileUpload({
@@ -55,8 +59,17 @@ createConnection({
         tempFileDir: `/tmp`
       })
     );
+
+  server.use(async (req, res, next) => {
+    // helper func for local dev
+    if (process.env.NODE_ENV !== 'production' && !req.session.userEntity) {
+      console.log('set debug user');
+      req.session.userEntity = await DBService.getUserById(1);
+    }
+    next();
+  });
   
-  server.post('/encode', asyncHandler(async (req, res, next) => {
+  server.post('/encode', asyncHandler(async (req, res) => {
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
       if (!videoLocation || !audioLocation) {
@@ -65,12 +78,12 @@ createConnection({
       const filename = path.basename(videoLocation);
       // check count here
       // @ts-ignore
-      const user = await DBService.getUserByAuth0Id(req.user.id);
-      await DBService.createUserEncode(user, filename);
+      const user = await DBService.getUserById(req.session.userEntity.id);
+      const newEncoding = await DBService.createUserEncode(user, filename);
       await SmsService.sendTextToSelf('New video created on ClipCrab');
       const encodings = await DBService.getEncodingsForUser(user);
       const clipLimit = user.numAllowedClipsTotal || NUM_ALLOWED_ENCODINGS;
-      if (encodings.length > clipLimit) {
+      if (process.env.NODE_ENV === 'production' && encodings.length > clipLimit) {
         await SmsService.sendTextToSelf('User hit video limit');
         res.status(403).json({ error: 'You have hit your allotment of free encodings. Please contact support at clipcrab@gmail.com.' });
         return;
@@ -84,11 +97,11 @@ createConnection({
             });
       }
       // response is sent before transcoding is created/uploaded
-      res.json({ fileName: filename });
+      res.json({ fileName: filename, encodingId: newEncoding.id });
   }));
   
   server.get('/encoding', async (req, res) => {
-    const { fileName } = req.query;
+    const { fileName, encodingId } = req.query;
     if (process.env.NODE_ENV !== 'production') {
       res.json({ finalVideoLocation: 'https://podcast-clipper.s3.amazonaws.com/mmbam-wizardmp3-2020-09-30T203501300Z-1.mp4' });
       return;
@@ -99,6 +112,8 @@ createConnection({
       return res.status(429).send();
     }
     const s3Location = AWSService.getTranscodedFile(fileName);
+    const encoding = await DBService.getUserEncodeById(parseInt(encodingId as string));
+    await DBService.updateUserEncode(encoding.id, s3Location);
     res.json({ finalVideoLocation: s3Location });
   });
   

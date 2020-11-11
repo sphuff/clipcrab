@@ -3,5 +3,10 @@
     "host": "localhost",
     "port": 5432,
     "username": "root",
-    "database": "clipcrab"
+    "database": "clipcrab",
+    "entities": ["src/entity/*.ts"],
+    "migrations": ["src/migration/*.js"],
+    "cli": {
+        "migrationsDir": "src/migration"
+    }
  }

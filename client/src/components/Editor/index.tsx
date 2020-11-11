@@ -16,6 +16,7 @@ type Props = {
   soundFileURL: string,
   wordBlocks: any,
   config: Config,
+  aspectRatio: DisplayType,
   finishedEncoding: boolean,
   uploadFile: Function,
   encodeVideo: Function,
@@ -25,6 +26,7 @@ type Props = {
   alignedTranscription: boolean,
   alignTranscription: Function,
   requestTranscription: Function,
+  onSelectAspectRatio: Function,
 }
 type State = {
   app: any,
@@ -38,7 +40,6 @@ type State = {
   seekTo: number,
   isRecording: boolean,
   finishedEncoding: boolean,
-  aspectRatio: DisplayType,
 }
 
 export default class Editor extends Component<Props,State>  {
@@ -57,7 +58,6 @@ export default class Editor extends Component<Props,State>  {
             pauseTime: undefined,
             isRecording: false,
             loadingText: undefined,
-            aspectRatio: DisplayType.SQUARE,
             textBlocks: [],
         };
     }
@@ -112,12 +112,10 @@ export default class Editor extends Component<Props,State>  {
     }
 
     onSelectAspectRatio(aspectRatio: DisplayType) {
-      const { config: { layouts : { [aspectRatio]: { width, height }}} } = this.props;
+      const { onSelectAspectRatio, config: { layouts : { [aspectRatio]: { width, height }}} } = this.props;
       const { app } = this.state;
       app.renderer.resize(width, height);
-      this.setState({
-        aspectRatio,
-      });
+      onSelectAspectRatio(aspectRatio);
     }
 
     onUpdateTextBlocks(textBlocks: any, seekTo: number) {
@@ -206,6 +204,10 @@ export default class Editor extends Component<Props,State>  {
         });
     }
 
+    componentWillUnmount() {
+      this.clearVideoAndAudio();
+      this.pauseAudio();
+    }
 
 
     playAudio() {
@@ -247,8 +249,9 @@ export default class Editor extends Component<Props,State>  {
     }
 
     render() {
-      const { app, hexColor, textBlocks, coverImage, loadingText, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding, aspectRatio } = this.state;
-      const { sound, soundFileURL, wordBlocks, loadedTranscription, alignedTranscription, transcribedText, alignTranscription, config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
+      const { app, hexColor, textBlocks, coverImage, loadingText, backgroundImage, pauseTime, restartSound, seekTo, isRecording, finishedEncoding } = this.state;
+      const { sound, soundFileURL, wordBlocks, loadedTranscription, alignedTranscription, transcribedText, alignTranscription, aspectRatio } = this.props;
+      const { config: { fps, layouts : { [aspectRatio]: { width, height, audiogram: audiogramProps, coverImage: coverImageProps, text: textProps }}} } = this.props;
       const isPlayingAudio = !(!!pauseTime);
 
       return (
