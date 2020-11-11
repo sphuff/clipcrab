@@ -37,6 +37,7 @@ export default class DBService {
     }
 
     static updateUserEncode(id: number, finalEncodingLocation: string): Promise<UpdateResult> {
+        console.log('Updating encoding with final location');
         return getConnection()
             .createQueryBuilder(UserEncode, "user_encode")
             .update(UserEncode)
@@ -55,7 +56,7 @@ export default class DBService {
                 videoName,
             })
             .execute();
-        console.log(insert);
+        console.log('Created user encoding');
         return await this.getUserEncodeById(insert.raw[0].id);
     }
 
