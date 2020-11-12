@@ -186,6 +186,7 @@ export default class Editor extends Component<Props,State>  {
             });
             try {
               await encodeVideo(serverAudioFileURL, serverVideoFileURL);
+              // this.clearVideoAndAudio();
             } catch(err) {
               this.setState({
                 isRecording: false,
@@ -216,7 +217,16 @@ export default class Editor extends Component<Props,State>  {
 
     pauseAudio() {
       const instance = this.props.sound.instances[0] ? this.props.sound.instances[0] : null;
-      if (!instance) return;
+      if (!instance) {
+        // audio has ended
+        this.setState({
+          pauseTime: this.props.sound.duration,
+          seekTo: this.props.sound.duration,
+        }, () => {
+          this.props.sound.pause();
+        });
+        return;
+      }
       const { progress } = instance;
       const pauseTime = progress * this.props.sound.duration;
       // set seekTo for text animation when replayed
