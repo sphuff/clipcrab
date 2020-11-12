@@ -112,7 +112,9 @@ createConnection({
     }
     const s3Location = AWSService.getTranscodedFile(fileName);
     const encoding = await DBService.getUserEncodeById(parseInt(encodingId as string));
-    await DBService.updateUserEncode(encoding.id, s3Location);
+    const update = await DBService.updateUserEncode(encoding.id, s3Location);
+    console.log('update: ', update);
+    console.log('final encoding: ', s3Location);
     res.json({ finalVideoLocation: s3Location });
   });
   
