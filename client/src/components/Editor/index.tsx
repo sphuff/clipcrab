@@ -186,7 +186,6 @@ export default class Editor extends Component<Props,State>  {
             });
             try {
               await encodeVideo(serverAudioFileURL, serverVideoFileURL);
-              this.clearVideoAndAudio();
             } catch(err) {
               this.setState({
                 isRecording: false,
@@ -202,11 +201,6 @@ export default class Editor extends Component<Props,State>  {
               mediaRecorder.stop();
           }, timeout);
         });
-    }
-
-    componentWillUnmount() {
-      this.clearVideoAndAudio();
-      this.pauseAudio();
     }
 
 
