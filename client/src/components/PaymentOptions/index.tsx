@@ -31,7 +31,7 @@ const PaymentOptions: React.FC<Props> = (props) => {
         <div className='paymentContainer flex flex-col'>
             {showLoading && <LoadingIndicator text='Loading checkout'/>}
             <button role="link" className='mx-2 record-button inline bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded text-xs' onClick={redirectToStripe}>
-                Checkout
+                Download for $1
             </button>
         </div>
     )
