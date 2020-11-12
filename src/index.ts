@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+import * as morgan from 'morgan';
 import billingRoutes from './routes/billing';
 
 const sessionMiddleware = require('./middleware/sessionMiddleware');
@@ -41,6 +42,7 @@ createConnection({
 }).then(async () => {
   server.use(bodyParser.json());
   server.use(cookieParser());
+  server.use(morgan('dev'));
   
   
   corsMiddleware(server);
