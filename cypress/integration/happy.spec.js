@@ -11,7 +11,7 @@ describe('happy path', () => {
             .then(() => cy.get('.editor-tray-lg .record-button').click())
             .then(() => cy.get('.editorContainer').contains('Now recording. Please wait to complete'))
             .then(() => cy.get('.editorContainer').contains('Encoding video. Almost there.', { timeout: 60000 }))
-            .then(() => cy.get('.appContainer').contains('Congrats, you can download your video by clicking'))
-            .then(() => cy.get('.encoding-link'))
+            .then(() => cy.get('.appContainer video'))
+            .then(() => cy.get('.paymentContainer button'))
     });
 });

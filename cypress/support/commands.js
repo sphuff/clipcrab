@@ -83,7 +83,7 @@ Cypress.Commands.add('uploadTestAudio', (overrides = {}) => {
     name: 'uploadTestAudio',
   });
 
-  cy.fixture('mmbam.mp3', 'base64').as('mp3');
+  cy.fixture('mmbam-tiny.mp3', 'base64').as('mp3');
   return cy.get('#audio-input').then(function (el) {
       const blob = Cypress.Blob.base64StringToBlob(this.mp3, 'audio/mpeg')
       const file = new File([blob], 'audio/mmbam.mp4', { type: 'audio/mpeg' })

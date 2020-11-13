@@ -1,5 +1,5 @@
 import { User } from "../entity/User";
-import {getConnection} from "typeorm";
+import {getConnection, UpdateResult} from "typeorm";
 import { UserEncode } from "../entity/UserEncode";
 
 export default class DBService {
@@ -7,6 +7,13 @@ export default class DBService {
         return getConnection()
             .createQueryBuilder(User, "user")
             .where("user.auth0Id = :auth0Id", { auth0Id })
+            .getOne();
+    }
+
+    static getUserById(id: number): Promise<User> {
+        return getConnection()
+            .createQueryBuilder(User, "user")
+            .where("user.id = :id", { id })
             .getOne();
     }
 
@@ -29,6 +36,16 @@ export default class DBService {
             .getOne();
     }
 
+    static updateUserEncode(id: number, finalEncodingLocation: string): Promise<UpdateResult> {
+        console.log('Updating encoding with final location');
+        return getConnection()
+            .createQueryBuilder(UserEncode, "user_encode")
+            .update(UserEncode)
+            .set({ finalEncodingLocation: finalEncodingLocation })
+            .where("user_encode.id = :id", { id })
+            .execute();
+    }
+
     static async createUserEncode(user: User, videoName: string): Promise<UserEncode> {
         const insert = await getConnection()
             .createQueryBuilder()
@@ -39,7 +56,7 @@ export default class DBService {
                 videoName,
             })
             .execute();
-        console.log(insert);
+        console.log('Created user encoding');
         return await this.getUserEncodeById(insert.raw[0].id);
     }
 

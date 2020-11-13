@@ -3,7 +3,7 @@ import logo from './assets/logo.png';
 import './App.scss';
 import pixiSound from 'pixi-sound';
 import config from './config.json';
-import { hexToRGB, getRandomColorHex, makeServerURL } from './utils';
+import { hexToRGB, getRandomColorHex, makeServerURL, getAxiosConfig } from './utils';
 import { NORMAL_ALPHA, } from './constants';
 import Axios from 'axios';
 import FileSelector from './FileSelector';
@@ -13,6 +13,8 @@ import walkthroughTranscription from './walkthrough-transcription.json';
 
 import Editor from './components/Editor';
 import LoadingIndicator from './components/LoadingIndicator';
+import VideoPreview from './components/VideoPreview';
+import { DisplayType } from './types/config';
 
 export default class App extends Component {
   constructor(props) {
@@ -32,23 +34,19 @@ export default class App extends Component {
       alignedTranscription: false,
       transcribedText: null,
       finalVideoLocation: null,
+      encodingId: null,
+      aspectRatio: DisplayType.SQUARE,
       seekTo: 0,
     };
   }
 
   async encodeVideo(serverAudioFileURL, serverVideoFileURL) {
-    const res = await fetch(makeServerURL('/encode'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        videoLocation: serverVideoFileURL,
-        audioLocation: serverAudioFileURL,
-      }),
-    });
-    const json = await res.json();
-    const { error, fileName } = json;
+    const body = {
+      videoLocation: serverVideoFileURL,
+      audioLocation: serverAudioFileURL,
+    };
+    const res = await Axios.post(makeServerURL('/encode'), body, getAxiosConfig());
+    const { error, fileName, encodingId } = res.data;
     if (error) {
       console.log('there was an error', error);
       toast.error(error);
@@ -58,10 +56,11 @@ export default class App extends Component {
     const axiosInstance = Axios.create();
     axiosRetry(axiosInstance, { retries: 50, retryCondition: (e) => !e.response || e.response.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(e), retryDelay: (retryCount) => 2000 });
     try {
-      let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName }});
+      let encodingRes = await axiosInstance.get(makeServerURL('/encoding'), { params: { fileName, encodingId }}, getAxiosConfig());
       console.log(encodingRes);
       this.setState({
         finalVideoLocation: encodingRes.data.finalVideoLocation,
+        encodingId,
       });
     } catch(err) {
       alert(err.message);
@@ -81,7 +80,7 @@ export default class App extends Component {
     let formData = new FormData();
     formData.append('file', file);
     try {
-      let res = await Axios.post(makeServerURL('/upload'), formData);
+      let res = await Axios.post(makeServerURL('/upload'), formData, getAxiosConfig());
       console.log(res);
       const { s3FileURL } = res.data;
       return { s3FileURL };
@@ -155,6 +154,12 @@ export default class App extends Component {
       wordBlocks: this.initWordBlocks(walkthroughTranscription),
     });
   }
+
+  onSelectAspectRatio(aspectRatio) {
+    this.setState({
+      aspectRatio,
+    });
+  }
   
   async loadSound(file) {
     const arrayBuffer = await file.arrayBuffer();
@@ -184,16 +189,17 @@ export default class App extends Component {
   }
 
   render() {
-    const { serverAudioFileURL, isLoading, loadingText, loadingSubText, loadedTranscription, alignedTranscription, transcribedText, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
-    const isReadyForVideoEditor = !!sound;
+    const { serverAudioFileURL, isLoading, aspectRatio, loadingText, loadingSubText, loadedTranscription, encodingId, alignedTranscription, transcribedText, hasSelectedSound, finalVideoLocation, sound, soundFile, soundFileURL, wordBlocks } = this.state;
+    const showVideoPreview = !!finalVideoLocation;
+    const isReadyForVideoEditor = !!sound && !showVideoPreview;
 
-    if (finalVideoLocation) {
-      return (
-        <div className="appContainer">
-          Congrats, you can download your video by clicking <a href={finalVideoLocation} className='encoding-link text-blue-400' download>here</a>
-        </div>
-      );
-    }
+    // if (finalVideoLocation) {
+    //   return (
+    //     <div className="appContainer">
+    //       Congrats, you can download your video by clicking <a href={finalVideoLocation} className='encoding-link text-blue-400' download>here</a>
+    //     </div>
+    //   );
+    // }
     return (
       <div className="appContainer overflow-x-hidden lg:max-h-screen min-h-screen min-w-screen bg-gray-200">
         <header className='bg-gray-400 min-w-screen flex'>
@@ -217,6 +223,7 @@ export default class App extends Component {
               soundFileURL={soundFileURL}
               wordBlocks={wordBlocks}
               config={config}
+              aspectRatio={aspectRatio}
               finishedEncoding={finalVideoLocation}
               uploadFile={this.uploadFile.bind(this)}
               encodeVideo={this.encodeVideo.bind(this)}
@@ -224,10 +231,13 @@ export default class App extends Component {
               loadedTranscription={loadedTranscription}
               transcribedText={transcribedText}
               alignedTranscription={alignedTranscription}
+              onSelectAspectRatio={this.onSelectAspectRatio.bind(this)}
               alignTranscription={this.alignTranscription.bind(this)}
               requestTranscription={this.requestTranscription.bind(this)}
             />
           )}
+
+          { showVideoPreview && <VideoPreview encodingId={encodingId} config={config} videoURL={finalVideoLocation} aspectRatio={aspectRatio}/>}
         </div>
       </div>
     );
