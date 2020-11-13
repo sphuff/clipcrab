@@ -8,7 +8,6 @@ const setUpRedisStore = () => {
     const rtg = url.parse(process.env.REDIS_URL);
   
     if (process.env.NODE_ENV === 'production') {
-        server.set('trust proxy', 1); // trust first proxy
         redisClient = redis.createClient(rtg.port, rtg.hostname);
         redisClient.auth(rtg.auth.split(':')[1]); // auth 1st part is username and 2nd is password separated by ":"
     } else {
@@ -20,15 +19,6 @@ const setUpRedisStore = () => {
 }
 
 module.exports = function(server) {
-    const redisStore = setUpRedisStore();
-    const sess = {
-        secret: process.env.SESSION_SECRET,
-        cookie: {},
-        resave: false,
-        saveUninitialized: true,
-        store: redisStore,
-    };
-      
     if (server.get('env') === 'production') {
         // Use secure cookies in production (requires SSL/TLS)
         sess.cookie.secure = true;
@@ -38,6 +28,14 @@ module.exports = function(server) {
         // "Unable to verify authorization request state"
         server.set('trust proxy', 1);
     }
+    const redisStore = setUpRedisStore();
+    const sess = {
+        secret: process.env.SESSION_SECRET,
+        cookie: {},
+        resave: false,
+        saveUninitialized: true,
+        store: redisStore,
+    };
       
       
     server.use(session(sess));
