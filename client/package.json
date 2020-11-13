@@ -27,8 +27,8 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "REACT_APP_BASE_URL=https://app.clipcrab.com react-app-rewired build",
-    "build:dev": "REACT_APP_BASE_URL=http://localhost:3001 react-app-rewired build",
+    "build": "react-app-rewired build",
+    "build:dev": "react-app-rewired build",
     "test": "react-app-rewired test",
     "node-test": "mocha tests",
     "eject": "react-scripts eject"
