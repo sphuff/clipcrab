@@ -4,6 +4,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import { useAuth0 } from "@auth0/auth0-react";
 
 const stripeKey = process.env.REACT_APP_STRIPE_KEY || 'pk_test_51HlxYtKetGCMaugX9Mch4TVVV4u5rU6aiuWVlBDb9tMMtlsgyY8BucPLV8v6QwyoUwopTZL0DWbfuhQO60iYCw3K00vXhVRqNx';
+const stripePrice = process.env.REACT_APP_STRIPE_PRICE || 'price_1HlxZIKetGCMaugX9fflJrEW';
 const stripePromise = loadStripe(stripeKey);
 
 type Props = {
@@ -23,7 +24,7 @@ const PaymentOptions: React.FC<Props> = (props) => {
             const stripe = await stripePromise;
             await stripe!.redirectToCheckout({
                 lineItems: [{
-                    price: 'price_1HlxZIKetGCMaugX9fflJrEW', // Replace with the ID of your price
+                    price: stripePrice, // Replace with the ID of your price
                     quantity: 1,
                 }],
                     mode: 'payment',
