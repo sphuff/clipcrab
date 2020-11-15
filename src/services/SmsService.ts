@@ -1,25 +1,20 @@
-import fetch from 'node-fetch';
+import * as twilio from 'twilio';
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
 
 export default class SmsService {
     static async sendTextToSelf(message) {
         if (process.env.NODE_ENV !== 'production') {
             return;
         }
-        const details = {
-            phone: '6152027053',
-            message,
-            key: process.env.SMALLSMS_KEY,
-        }
         try {
-            const formBody = Object.keys(details).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key])).join('&'); 
-            const res = await fetch('https://smallsms.app/text', {
-                headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                method: 'POST',
-                body: formBody,
+            console.log('twilio sid', accountSid, authToken);
+            return client.messages.create({
+                body: message,
+                from: '+16152402816',
+                to: '+16152027053'
             });
-            const json = await res.json();
         } catch(err) {
             console.log('There was an error sending an SMS', err.message);
         }

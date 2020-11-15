@@ -10,6 +10,7 @@ const router = express.Router();
 router.get('/login', passport.authenticate('auth0', {
     scope: 'openid email profile'
 }), function (req, res) {
+    // @ts-ignore
     res.redirect(req.session.returnTo || '/');
 });
 
@@ -34,7 +35,9 @@ router.get('/callback', function (req, res, next) {
           console.log('created new user: ', userEntity);
           await SmsService.sendTextToSelf('New user signup on ClipCrab');
         }
+        // @ts-ignore
         req.session.userEntity = userEntity;
+        // @ts-ignore
         req.session.save(err => {
           // @ts-ignore
           req.userEntity = userEntity;
@@ -42,6 +45,7 @@ router.get('/callback', function (req, res, next) {
           const returnTo = req.session.returnTo;
           // @ts-ignore
           console.log('saved user cookie');
+          // @ts-ignore
           delete req.session.returnTo;
           res.redirect(returnTo || '/');
         });

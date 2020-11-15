@@ -63,8 +63,10 @@ createConnection({
 
   server.use(async (req, res, next) => {
     // helper func for local dev
+    // @ts-ignore
     if (process.env.NODE_ENV === 'development' && !req.session.userEntity) {
       console.log('set debug user');
+      // @ts-ignore
       req.session.userEntity = await DBService.getUserById(1);
     }
     next();
