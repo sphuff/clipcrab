@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/login', passport.authenticate('auth0', {
     scope: 'openid email profile'
 }), function (req, res) {
-    res.redirect('/');
+    res.redirect(req.session.returnTo || '/');
 });
 
 router.get('/callback', function (req, res, next) {

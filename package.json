@@ -47,7 +47,7 @@
       "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
       "build:dev": "cd client && yarn build:dev",
       "build:ci": "cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build:dev",
-      "heroku-postbuild": "yarn typeorm migration:run && cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
+      "heroku-postbuild": "yarn typeorm migration:run -f ormconfig.js && cd client && mkdir build && yarn install && yarn install --only=dev --no-shrinkwrap && yarn build",
       "cypress:open": "cypress open",
       "cypress:test": "cypress run --record --headless -b chrome --key e6fe4a0e-0cb3-4296-a057-7002ee50b613",
       "test": "mocha --require ts-node/register tests/**/*.ts",

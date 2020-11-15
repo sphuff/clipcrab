@@ -38,7 +38,6 @@ createConnection({
   url: dbUrl,
   type: 'postgres',
   entities: [path.join(__dirname, './entity/**/*.ts')],
-  synchronize: true,
 }).then(async () => {
   server.use(bodyParser.json());
   server.use(cookieParser());
@@ -74,21 +73,27 @@ createConnection({
   server.post('/encode', asyncHandler(async (req, res) => {
       const { videoLocation, audioLocation } = req.body;
       console.log('encode', videoLocation, audioLocation);
+      console.log('encoding for user', req.session.userEntity);
       if (!videoLocation || !audioLocation) {
         return res.status(400).json({ error: 'Must pass video and audio paths to encode' });
       }
       const filename = path.basename(videoLocation);
       // check count here
       // @ts-ignore
-      const user = await DBService.getUserById(req.session.userEntity.id);
+      let user = null;
+      if (req.session.userEntity) {
+        user = await DBService.getUserById(req.session.userEntity.id);
+      }
       const newEncoding = await DBService.createUserEncode(user, filename);
       await SmsService.sendTextToSelf('New video created on ClipCrab');
-      const encodings = await DBService.getEncodingsForUser(user);
-      const clipLimit = user.numAllowedClipsTotal || NUM_ALLOWED_ENCODINGS;
-      if (process.env.NODE_ENV === 'production' && encodings.length > clipLimit) {
-        await SmsService.sendTextToSelf('User hit video limit');
-        res.status(403).json({ error: 'You have hit your allotment of free encodings. Please contact support at clipcrab@gmail.com.' });
-        return;
+      if (user) {
+        const encodings = await DBService.getEncodingsForUser(user);
+        const clipLimit = (user && user.numAllowedClipsTotal) || NUM_ALLOWED_ENCODINGS;
+        if (process.env.NODE_ENV === 'production' && encodings.length > clipLimit) {
+          await SmsService.sendTextToSelf('User hit video limit');
+          res.status(403).json({ error: 'You have hit your allotment of free encodings. Please contact support at clipcrab@gmail.com.' });
+          return;
+        }
       }
       if (process.env.NODE_ENV === 'production') {
           EncodingController.combineAudioAndVideo(audioLocation, videoLocation)
@@ -112,7 +117,7 @@ createConnection({
     }
     const s3Location = AWSService.getTranscodedFile(fileName);
     const encoding = await DBService.getUserEncodeById(parseInt(encodingId as string));
-    const update = await DBService.updateUserEncode(encoding.id, s3Location);
+    const update = await DBService.updateUserEncodeLocation(encoding.id, s3Location);
     console.log('update: ', update);
     console.log('final encoding: ', s3Location);
     res.json({ finalVideoLocation: s3Location });
@@ -190,10 +195,10 @@ createConnection({
   });
   
   // weird but secure index.html and let rest through
-  server.get('/', secured(), (req, res) => {
+  server.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../', 'client/build/index.html'));
   });
-  server.get('/index.html', secured(), (req, res) => {
+  server.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, '../', 'client/build/index.html'));
   });
   

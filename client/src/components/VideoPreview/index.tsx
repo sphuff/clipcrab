@@ -13,10 +13,12 @@ type Props = {
 const VideoPreview: React.FC<Props> = (props) => {
     const { encodingId, videoURL, config, aspectRatio } = props;
     const { width, height } = config.layouts[aspectRatio];
+
+    const cancelURL = process.env.REACT_APP_BASE_URL || 'http://localhost:3001/cancel';
     return (
         <div className='flex flex-col'>
             <video className='mx-auto my-8 rounded shadow-lg' controls src={videoURL} width={width} height={height}></video>
-            <PaymentOptions successURL={makeServerURL(`/billing/success?encodingId=${encodingId}`)}/>
+            <PaymentOptions cancelURL={cancelURL} signupSuccessURL={makeServerURL(`/billing/success/user?encodingId=${encodingId}`)} paymentSuccessURL={makeServerURL(`/billing/success?encodingId=${encodingId}`)}/>
         </div>
     )
 }

@@ -10,15 +10,18 @@ export default class SmsService {
             message,
             key: process.env.SMALLSMS_KEY,
         }
-        const formBody = Object.keys(details).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key])).join('&'); 
-        const res = await fetch('https://smallsms.app/text', {
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            method: 'POST',
-            body: formBody,
-        });
-        
-        const json = await res.json();
+        try {
+            const formBody = Object.keys(details).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(details[key])).join('&'); 
+            const res = await fetch('https://smallsms.app/text', {
+                headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                method: 'POST',
+                body: formBody,
+            });
+            const json = await res.json();
+        } catch(err) {
+            console.log('There was an error sending an SMS', err.message);
+        }
     }
 }

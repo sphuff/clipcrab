@@ -36,7 +36,7 @@ export default class DBService {
             .getOne();
     }
 
-    static updateUserEncode(id: number, finalEncodingLocation: string): Promise<UpdateResult> {
+    static updateUserEncodeLocation(id: number, finalEncodingLocation: string): Promise<UpdateResult> {
         console.log('Updating encoding with final location');
         return getConnection()
             .createQueryBuilder(UserEncode, "user_encode")
@@ -46,7 +46,17 @@ export default class DBService {
             .execute();
     }
 
-    static async createUserEncode(user: User, videoName: string): Promise<UserEncode> {
+    static updateUserEncodeUser(id: number, user: User): Promise<UpdateResult> {
+        console.log('Updating encoding with final location');
+        return getConnection()
+            .createQueryBuilder(UserEncode, "user_encode")
+            .update(UserEncode)
+            .set({ user })
+            .where("user_encode.id = :id", { id })
+            .execute();
+    }
+
+    static async createUserEncode(user: User|null, videoName: string): Promise<UserEncode> {
         const insert = await getConnection()
             .createQueryBuilder()
             .insert()
