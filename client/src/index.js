@@ -5,6 +5,7 @@ import App from './App';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as serviceWorker from './serviceWorker';
+import { Auth0Provider } from "@auth0/auth0-react";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,7 +20,13 @@ ReactDOM.render(
       draggable
       pauseOnHover
     />
-    <App />
+    <Auth0Provider
+      domain="clipcrab.us.auth0.com"
+      clientId="MNAeKIvSPrN0lWAWCFpN9vqPPYYbWdyU"
+      redirectUri={window.location.origin}
+    >
+      <App />
+    </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

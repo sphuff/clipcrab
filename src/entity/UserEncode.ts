@@ -6,11 +6,14 @@ export class UserEncode {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, user => user.encodings)
+    @ManyToOne(() => User, user => user.encodings, {nullable: true})
     user: User;
 
     @Column()
     videoName: string;
+
+    @Column({ nullable: true })
+    finalEncodingLocation?: string;
 
     @CreateDateColumn()
     created: string;
