@@ -8,3 +8,4 @@ build
 cypress.env.json
 cypress/screenshots
 cypress/videos
+.idea
